@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, getStatus, fmt, fmtK } from '@/lib/data';
+import { getStatus, fmt, fmtK } from '@/lib/data';
+import { useDashboard } from '@/lib/dashboard-store';
+import DataToolbar from './DataToolbar';
 
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string }> = {
@@ -22,9 +24,7 @@ const barColorClass = (status: string) =>
   status === 'on-track' ? 'bg-emerald' : status === 'at-risk' ? 'bg-amber' : status === 'off-track' ? 'bg-red' : 'bg-border';
 
 const ScorecardTab = () => {
-  const metrics = METRICS_CONFIG;
-  const weekly = WEEKLY_CONFIG;
-  const monthly = MONTHLY_COUNTER;
+  const { metrics, weekly, monthly } = useDashboard();
 
   const counts = useMemo(() => {
     let on = 0, at = 0, off = 0;
@@ -35,7 +35,7 @@ const ScorecardTab = () => {
       else if (s === 'off-track') off++;
     });
     return { on, at, off };
-  }, []);
+  }, [metrics]);
 
   return (
     <div className="mx-auto max-w-[1340px] px-4 py-6 sm:px-7">
@@ -56,6 +56,8 @@ const ScorecardTab = () => {
           </div>
         </div>
       </div>
+
+      <DataToolbar tab="scorecard" />
 
       {/* Score summary KPIs */}
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -104,7 +106,7 @@ const ScorecardTab = () => {
               </tr>
             </thead>
             <tbody>
-              {metrics.map((m, i) => {
+              {metrics.map((m) => {
                 const status = getStatus(m.actual, m.target, m.lowerIsBetter);
                 let pct = 0;
                 if (m.actual !== null) {
@@ -165,7 +167,7 @@ const ScorecardTab = () => {
         <div className="flex items-center justify-between rounded-t-lg bg-primary px-5 py-3.5">
           <span className="font-display text-[16px] tracking-[3px] text-primary-foreground">Weekly Counter Payments</span>
           <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-2.5 py-0.5 text-[9px] font-bold tracking-[2px] uppercase text-primary-foreground/50">
-            Target: K 15,000 / week
+            Target: K {fmt(weekly[0]?.target ?? 15000)} / week
           </span>
         </div>
         <div className="grid grid-cols-2 gap-3 rounded-b-lg border border-t-0 border-border bg-card p-4 lg:grid-cols-4">
@@ -198,7 +200,6 @@ const ScorecardTab = () => {
 
       {/* Quarterly + Monthly */}
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Quarterly */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -249,7 +250,6 @@ const ScorecardTab = () => {
           </div>
         </motion.div>
 
-        {/* Monthly Counter Totals */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -258,7 +258,7 @@ const ScorecardTab = () => {
         >
           <div className="flex items-center justify-between bg-primary px-5 py-3.5">
             <span className="font-display text-[16px] tracking-[3px] text-primary-foreground">Monthly Counter Totals</span>
-            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-2.5 py-0.5 text-[9px] font-bold tracking-[2px] uppercase text-primary-foreground/50">K 60,000 target</span>
+            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-2.5 py-0.5 text-[9px] font-bold tracking-[2px] uppercase text-primary-foreground/50">K {fmt(monthly[0]?.target ?? 60000)} target</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">

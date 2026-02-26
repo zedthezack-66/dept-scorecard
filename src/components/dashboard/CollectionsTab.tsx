@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
-import { SAMPLE_AGENTS, processAgents, fmtK } from '@/lib/data';
+import { processAgents, fmtK } from '@/lib/data';
+import { useDashboard } from '@/lib/dashboard-store';
 import KPIStrip, { type KPIItem } from './KPIStrip';
 import AchievementBar from './AchievementBar';
 import AgentLeaderboard from './AgentLeaderboard';
 import SidePanel from './SidePanel';
+import DataToolbar from './DataToolbar';
 
 const CollectionsTab = () => {
-  const data = useMemo(() => processAgents(SAMPLE_AGENTS), []);
+  const { agents } = useDashboard();
+  const data = useMemo(() => processAgents(agents), [agents]);
   const { rows, totT, totM, totV, rate, maxM } = data;
 
   const kpis: KPIItem[] = [
@@ -23,7 +26,6 @@ const CollectionsTab = () => {
 
   return (
     <div className="mx-auto max-w-[1340px] px-4 py-6 sm:px-7">
-      {/* Page Header */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary pb-5">
         <div>
           <h1 className="font-display text-[clamp(26px,4vw,48px)] leading-none text-foreground">
@@ -38,13 +40,10 @@ const CollectionsTab = () => {
             <div className="text-[8px] tracking-[3px] uppercase text-primary-foreground/35">Report Date</div>
             <div className="font-display text-[13px] tracking-[2px] text-accent">{dateStr}</div>
           </div>
-          <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground">
-            <div className="h-1.5 w-1.5 rounded-full bg-amber" />
-            Sample data
-          </div>
         </div>
       </div>
 
+      <DataToolbar tab="collections" />
       <KPIStrip items={kpis} />
       <AchievementBar rate={rate} collected={totM} target={totT} />
 
