@@ -1,8 +1,29 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import {
   SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER,
   type AgentData, type MetricData, type WeeklyData, type MonthlyCounter,
 } from './data';
+
+const STORAGE_KEYS = {
+  agents: 'dash_agents',
+  metrics: 'dash_metrics',
+  weekly: 'dash_weekly',
+  monthly: 'dash_monthly',
+} as const;
+
+function loadFromStorage<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw) as T;
+  } catch { /* ignore */ }
+  return fallback;
+}
+
+function saveToStorage<T>(key: string, value: T) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* ignore */ }
+}
 
 interface DashboardState {
   agents: AgentData[];
@@ -28,25 +49,36 @@ export const useDashboard = () => {
 };
 
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
-  const [agents, setAgents] = useState<AgentData[]>(SAMPLE_AGENTS);
-  const [metrics, setMetrics] = useState<MetricData[]>(METRICS_CONFIG);
-  const [weekly, setWeekly] = useState<WeeklyData[]>(WEEKLY_CONFIG);
-  const [monthly, setMonthly] = useState<MonthlyCounter[]>(MONTHLY_COUNTER);
+  const [agents, setAgentsRaw] = useState<AgentData[]>(() => loadFromStorage(STORAGE_KEYS.agents, SAMPLE_AGENTS));
+  const [metrics, setMetricsRaw] = useState<MetricData[]>(() => loadFromStorage(STORAGE_KEYS.metrics, METRICS_CONFIG));
+  const [weekly, setWeeklyRaw] = useState<WeeklyData[]>(() => loadFromStorage(STORAGE_KEYS.weekly, WEEKLY_CONFIG));
+  const [monthly, setMonthlyRaw] = useState<MonthlyCounter[]>(() => loadFromStorage(STORAGE_KEYS.monthly, MONTHLY_COUNTER));
+
+  // Persist on change
+  useEffect(() => { saveToStorage(STORAGE_KEYS.agents, agents); }, [agents]);
+  useEffect(() => { saveToStorage(STORAGE_KEYS.metrics, metrics); }, [metrics]);
+  useEffect(() => { saveToStorage(STORAGE_KEYS.weekly, weekly); }, [weekly]);
+  useEffect(() => { saveToStorage(STORAGE_KEYS.monthly, monthly); }, [monthly]);
+
+  const setAgents = useCallback((a: AgentData[]) => setAgentsRaw(a), []);
+  const setMetrics = useCallback((m: MetricData[]) => setMetricsRaw(m), []);
+  const setWeekly = useCallback((w: WeeklyData[]) => setWeeklyRaw(w), []);
+  const setMonthly = useCallback((m: MonthlyCounter[]) => setMonthlyRaw(m), []);
 
   const updateAgentTarget = useCallback((index: number, target: number) => {
-    setAgents(prev => prev.map((a, i) => i === index ? { ...a, target } : a));
+    setAgentsRaw(prev => prev.map((a, i) => i === index ? { ...a, target } : a));
   }, []);
 
   const updateMetricTarget = useCallback((key: string, target: number) => {
-    setMetrics(prev => prev.map(m => m.key === key ? { ...m, target } : m));
+    setMetricsRaw(prev => prev.map(m => m.key === key ? { ...m, target } : m));
   }, []);
 
   const updateWeeklyTarget = useCallback((index: number, target: number) => {
-    setWeekly(prev => prev.map((w, i) => i === index ? { ...w, target } : w));
+    setWeeklyRaw(prev => prev.map((w, i) => i === index ? { ...w, target } : w));
   }, []);
 
   const updateMonthlyTarget = useCallback((index: number, target: number) => {
-    setMonthly(prev => prev.map((m, i) => i === index ? { ...m, target } : m));
+    setMonthlyRaw(prev => prev.map((m, i) => i === index ? { ...m, target } : m));
   }, []);
 
   return (

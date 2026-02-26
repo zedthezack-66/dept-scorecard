@@ -17,13 +17,13 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`flex items-center gap-2 border-b-[3px] px-5 py-3.5 text-[11px] font-bold tracking-[2px] uppercase transition-all ${
+          className={`flex items-center gap-2.5 border-b-[3px] px-6 py-4 text-[13px] font-bold tracking-[2px] uppercase transition-all ${
             activeTab === tab.id
               ? 'border-accent text-primary-foreground'
               : 'border-transparent text-primary-foreground/40 hover:text-primary-foreground/75'
           }`}
         >
-          <tab.icon size={12} />
+          <tab.icon size={16} />
           {tab.label}
         </button>
       ))}

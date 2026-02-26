@@ -60,21 +60,20 @@ const DataToolbar = ({ tab }: DataToolbarProps) => {
       }
     };
     reader.readAsText(file);
-    // Reset input so same file can be re-imported
     e.target.value = '';
   };
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={handleImport} className="gap-1.5 text-[11px] tracking-wider uppercase">
-          <Upload size={13} /> Import CSV
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <Button variant="outline" size="default" onClick={handleImport} className="gap-2 text-[13px] tracking-wider uppercase">
+          <Upload size={16} /> Import CSV
         </Button>
-        <Button variant="outline" size="sm" onClick={handleDownloadTemplate} className="gap-1.5 text-[11px] tracking-wider uppercase">
-          <Download size={13} /> Download Template
+        <Button variant="outline" size="default" onClick={handleDownloadTemplate} className="gap-2 text-[13px] tracking-wider uppercase">
+          <Download size={16} /> Download Template
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-1.5 text-[11px] tracking-wider uppercase">
-          <Pencil size={13} /> Edit Targets
+        <Button variant="outline" size="default" onClick={() => setEditOpen(true)} className="gap-2 text-[13px] tracking-wider uppercase">
+          <Pencil size={16} /> Edit Targets
         </Button>
         <input
           ref={fileRef}
