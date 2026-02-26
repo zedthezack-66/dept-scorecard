@@ -1,4 +1,5 @@
 import type { AgentData, MetricData, WeeklyData, MonthlyCounter } from './data';
+import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER } from './data';
 
 // ── CSV Generation ──
 
@@ -14,22 +15,39 @@ export function generateCollectionsTemplate(): string {
 export function generateScorecardTemplate(): string {
   const sections: string[] = [];
 
+  // METRICS section — match all 8 default metrics exactly
   sections.push('## METRICS');
   sections.push('Key,Name,Target,Unit,LowerIsBetter,Type,Actual,Jan,Feb,Mar');
-  sections.push('col_excl,Collection Efficiency — Exclusive Arrears,98,%,false,Monthly,92,90,92,');
-  sections.push('npl,NPL Ratio,4,%,true,Monthly,4.8,5.1,4.8,');
+  for (const m of METRICS_CONFIG) {
+    sections.push([
+      m.key,
+      m.name,
+      m.target,
+      m.unit,
+      m.lowerIsBetter,
+      m.type,
+      m.actual ?? '',
+      m.jan ?? '',
+      m.feb ?? '',
+      m.mar ?? '',
+    ].join(','));
+  }
 
+  // WEEKLY section — match default weekly rows
   sections.push('');
   sections.push('## WEEKLY');
   sections.push('Week,Start,End,Target,Actual');
-  sections.push('Week 1,05 Jan,11 Jan,15000,14200');
-  sections.push('Week 2,12 Jan,18 Jan,15000,');
+  for (const w of WEEKLY_CONFIG) {
+    sections.push([w.week, w.start, w.end, w.target, w.actual ?? ''].join(','));
+  }
 
+  // MONTHLY section — match default monthly rows
   sections.push('');
   sections.push('## MONTHLY');
   sections.push('Month,Target,Actual');
-  sections.push('Jan 2026,60000,43500');
-  sections.push('Feb 2026,60000,');
+  for (const m of MONTHLY_COUNTER) {
+    sections.push([m.month, m.target, m.actual ?? ''].join(','));
+  }
 
   return sections.join('\n');
 }
@@ -46,7 +64,6 @@ function parseCsvLines(text: string): string[][] {
 
 export function parseCollectionsCsv(text: string): AgentData[] {
   const lines = parseCsvLines(text);
-  // skip header
   const header = lines[0];
   const nameIdx = header.findIndex(h => /name/i.test(h));
   const phoneIdx = header.findIndex(h => /phone/i.test(h));
