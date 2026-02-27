@@ -42,6 +42,8 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
             <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Target (K)</th>
             <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Movement (K)</th>
             <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Variance (K)</th>
+            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Avg Days</th>
+            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Count</th>
             <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Rate</th>
           </tr>
         </thead>
@@ -70,6 +72,8 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
                 </div>
               </td>
               <td className="hidden px-5 py-3.5 text-right text-[14px] font-medium text-amber md:table-cell">{fmt(r.variance)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[14px] lg:table-cell">{fmt(r.avgDaysArrears)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[14px] lg:table-cell">{fmt(r.count)}</td>
               <td className="px-5 py-3.5 text-right">
                 <span className={`inline-flex min-w-[56px] items-center justify-center rounded-md px-3 py-1 font-display text-[17px] tracking-wider ${rateClass(r.rate)}`}>
                   {r.rate}%
@@ -87,6 +91,8 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
             <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground md:table-cell">{fmt(totT)}</td>
             <td className="px-5 py-3.5 text-right text-[14px] font-bold text-emerald">{fmt(totM)}</td>
             <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-red md:table-cell">{fmt(totV)}</td>
+            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground lg:table-cell">—</td>
+            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground lg:table-cell">{fmt(rows.reduce((s, r) => s + r.count, 0))}</td>
             <td className="px-5 py-3.5 text-right">
               <span className="inline-flex min-w-[56px] items-center justify-center rounded-md bg-primary-foreground/10 px-3 py-1 font-display text-[17px] tracking-wider text-gold-light">
                 {rate}%

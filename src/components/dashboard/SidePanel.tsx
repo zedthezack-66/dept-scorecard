@@ -73,7 +73,7 @@ const SidePanel = ({ rate, collected, remaining, topPerformer, needsAttention }:
         <div className="font-display text-[26px] tracking-[2px] text-primary-foreground">{topPerformer.name}</div>
         <div className="font-display text-[52px] leading-none text-accent">{topPerformer.rate}%</div>
         <div className="mt-1 text-[12px] text-primary-foreground/40">
-          K {fmtK(topPerformer.movement)} collected · Target K {fmtK(topPerformer.target)}
+          {fmtK(topPerformer.movement)} collected · Target {fmtK(topPerformer.target)}
         </div>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-primary-foreground/10">
           <motion.div
