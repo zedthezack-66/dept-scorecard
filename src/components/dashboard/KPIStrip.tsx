@@ -29,10 +29,10 @@ const KPIStrip = ({ items }: { items: KPIItem[] }) => (
           className="relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-card"
         >
           <div className={`absolute top-0 left-0 right-0 h-[4px] ${c.bar}`} />
-          <div className="mb-2 text-[11px] font-bold tracking-[3px] uppercase text-muted-foreground">
+          <div className="mb-2 text-[13px] font-bold tracking-[3px] uppercase text-muted-foreground">
             {item.label}
           </div>
-          <div className={`font-display text-[clamp(28px,3.5vw,44px)] leading-none tracking-wider ${c.text}`}>
+          <div className={`font-display text-[clamp(32px,4vw,48px)] leading-none tracking-wider ${c.text}`}>
             {item.value}
           </div>
           <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-secondary">
@@ -43,7 +43,7 @@ const KPIStrip = ({ items }: { items: KPIItem[] }) => (
               transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
             />
           </div>
-          <div className="mt-2 text-[12px] text-muted-foreground">{item.note}</div>
+          <div className="mt-2 text-[14px] text-muted-foreground">{item.note}</div>
         </motion.div>
       );
     })}

@@ -27,7 +27,7 @@ const SidePanel = ({ rate, collected, remaining, topPerformer, needsAttention }:
         transition={{ delay: 0.34, duration: 0.4 }}
         className="rounded-lg border border-border bg-card p-6 shadow-card"
       >
-        <div className="mb-3 text-[12px] font-bold tracking-[3px] uppercase text-muted-foreground">Portfolio Breakdown</div>
+        <div className="mb-3 text-[14px] font-bold tracking-[3px] uppercase text-muted-foreground">Portfolio Breakdown</div>
         <div className="relative mb-4 flex items-center justify-center">
           <svg width="160" height="160" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
             <circle cx="70" cy="70" r="50" fill="none" stroke="hsl(var(--ivory-2))" strokeWidth="16" />
@@ -42,21 +42,21 @@ const SidePanel = ({ rate, collected, remaining, topPerformer, needsAttention }:
             />
           </svg>
           <div className="absolute text-center">
-            <span className="block font-display text-[34px] leading-none text-foreground">{rate}%</span>
-            <span className="text-[10px] tracking-[2px] uppercase text-muted-foreground">Collected</span>
+            <span className="block font-display text-[38px] leading-none text-foreground">{rate}%</span>
+            <span className="text-[12px] tracking-[2px] uppercase text-muted-foreground">Collected</span>
           </div>
         </div>
         <div className="flex items-center justify-between border-b border-border py-2">
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <div className="h-2 w-2 rounded-full bg-emerald" /> Collected
+          <div className="flex items-center gap-2 text-[15px] text-muted-foreground">
+            <div className="h-2.5 w-2.5 rounded-full bg-emerald" /> Collected
           </div>
-          <span className="font-display text-[18px] tracking-wider text-emerald">{fmtK(collected)}</span>
+          <span className="font-display text-[20px] tracking-wider text-emerald">{fmtK(collected)}</span>
         </div>
         <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <div className="h-2 w-2 rounded-full bg-ivory-3" /> Remaining
+          <div className="flex items-center gap-2 text-[15px] text-muted-foreground">
+            <div className="h-2.5 w-2.5 rounded-full bg-ivory-3" /> Remaining
           </div>
-          <span className="font-display text-[18px] tracking-wider text-amber">{fmtK(remaining)}</span>
+          <span className="font-display text-[20px] tracking-wider text-amber">{fmtK(remaining)}</span>
         </div>
       </motion.div>
 
@@ -67,12 +67,12 @@ const SidePanel = ({ rate, collected, remaining, topPerformer, needsAttention }:
         transition={{ delay: 0.4, duration: 0.4 }}
         className="rounded-lg bg-gradient-to-br from-primary to-navy-3 p-6 text-primary-foreground shadow-card-lg"
       >
-        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold tracking-[3px] uppercase text-primary-foreground/35">
+        <div className="mb-2 flex items-center gap-1.5 text-[13px] font-bold tracking-[3px] uppercase text-primary-foreground/35">
           🏆 Top Performer
         </div>
-        <div className="font-display text-[26px] tracking-[2px] text-primary-foreground">{topPerformer.name}</div>
-        <div className="font-display text-[52px] leading-none text-accent">{topPerformer.rate}%</div>
-        <div className="mt-1 text-[12px] text-primary-foreground/40">
+        <div className="font-display text-[30px] tracking-[2px] text-primary-foreground">{topPerformer.name}</div>
+        <div className="font-display text-[56px] leading-none text-accent">{topPerformer.rate}%</div>
+        <div className="mt-1 text-[14px] text-primary-foreground/40">
           {fmtK(topPerformer.movement)} collected · Target {fmtK(topPerformer.target)}
         </div>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-primary-foreground/10">
@@ -92,11 +92,11 @@ const SidePanel = ({ rate, collected, remaining, topPerformer, needsAttention }:
         transition={{ delay: 0.46, duration: 0.4 }}
         className="rounded-lg border border-border bg-card p-5 shadow-card"
       >
-        <div className="mb-3 text-[12px] font-bold tracking-[3px] uppercase text-muted-foreground">⚠ Needs Attention</div>
+        <div className="mb-3 text-[14px] font-bold tracking-[3px] uppercase text-muted-foreground">⚠ Needs Attention</div>
         {needsAttention.map((r, i) => (
           <div key={i} className={`flex items-center justify-between py-2 ${i < needsAttention.length - 1 ? 'border-b border-border' : ''}`}>
-            <span className="text-[14px] font-medium text-muted-foreground">{r.name}</span>
-            <span className="font-display text-[18px] text-red">{r.rate}%</span>
+            <span className="text-[15px] font-medium text-muted-foreground">{r.name}</span>
+            <span className="font-display text-[20px] text-red">{r.rate}%</span>
           </div>
         ))}
       </motion.div>
