@@ -4,19 +4,21 @@ export interface AgentData {
   phone: string;
   target: number;
   movement: number;
+  avgDaysArrears: number;
+  count: number;
   variance?: number;
   rate?: number;
 }
 
 export const SAMPLE_AGENTS: AgentData[] = [
-  { name: 'Agent 1', phone: '097-XXX-XXX', target: 80000, movement: 58115 },
-  { name: 'Agent 2', phone: '076-XXX-XXX', target: 100000, movement: 41986 },
-  { name: 'Agent 3', phone: '076-XXX-XXX', target: 60000, movement: 38819 },
-  { name: 'Agent 4', phone: '097-XXX-XXX', target: 80000, movement: 24022 },
-  { name: 'Agent 5', phone: '097-XXX-XXX', target: 80000, movement: 21943 },
-  { name: 'Agent 6', phone: '076-XXX-XXX', target: 60000, movement: 7838 },
-  { name: 'Agent 7', phone: '097-XXX-XXX', target: 60000, movement: 3629 },
-  { name: 'Agent 8', phone: '076-XXX-XXX', target: 60000, movement: 1160 },
+  { name: 'Agent 1', phone: '097-XXX-XXX', target: 80000, movement: 58115, avgDaysArrears: 45, count: 120 },
+  { name: 'Agent 2', phone: '076-XXX-XXX', target: 100000, movement: 41986, avgDaysArrears: 62, count: 98 },
+  { name: 'Agent 3', phone: '076-XXX-XXX', target: 60000, movement: 38819, avgDaysArrears: 38, count: 85 },
+  { name: 'Agent 4', phone: '097-XXX-XXX', target: 80000, movement: 24022, avgDaysArrears: 78, count: 110 },
+  { name: 'Agent 5', phone: '097-XXX-XXX', target: 80000, movement: 21943, avgDaysArrears: 55, count: 95 },
+  { name: 'Agent 6', phone: '076-XXX-XXX', target: 60000, movement: 7838, avgDaysArrears: 92, count: 72 },
+  { name: 'Agent 7', phone: '097-XXX-XXX', target: 60000, movement: 3629, avgDaysArrears: 105, count: 60 },
+  { name: 'Agent 8', phone: '076-XXX-XXX', target: 60000, movement: 1160, avgDaysArrears: 120, count: 45 },
 ];
 
 export interface MetricData {
@@ -72,7 +74,11 @@ export const MONTHLY_COUNTER: MonthlyCounter[] = [
 
 // Utility functions
 export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
-export const fmtK = (n: number) => n >= 1000000 ? (n / 1000000).toFixed(2) + 'M' : n >= 1000 ? (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'K' : String(n);
+export const fmtK = (n: number) => {
+  if (n >= 1000000) return 'K ' + (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000) return 'K ' + Number((n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)).toLocaleString('en-ZM') + 'K';
+  return 'K ' + Number(n).toLocaleString('en-ZM');
+};
 
 export function getStatus(actual: number | null, target: number, lowerIsBetter: boolean): string {
   if (actual === null || actual === undefined || isNaN(actual)) return 'pending';

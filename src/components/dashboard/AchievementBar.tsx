@@ -23,7 +23,7 @@ const AchievementBar = ({ rate, collected, target }: AchievementBarProps) => {
             Target Achievement Progress
           </div>
           <div className="text-[14px] text-muted-foreground">
-            K {fmt(collected)} collected of K {fmt(target)} target
+            {fmtK(collected)} collected of {fmtK(target)} target
           </div>
         </div>
         <div className="font-display text-[52px] leading-none text-foreground">
@@ -39,7 +39,7 @@ const AchievementBar = ({ rate, collected, target }: AchievementBarProps) => {
         />
       </div>
       <div className="flex justify-between text-[12px] font-medium text-muted-foreground">
-        {ticks.map((t, i) => <span key={i}>K {t}</span>)}
+        {ticks.map((t, i) => <span key={i}>{t}</span>)}
       </div>
     </motion.div>
   );

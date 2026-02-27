@@ -4,10 +4,10 @@ import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER } from './data';
 // ── CSV Generation ──
 
 export function generateCollectionsTemplate(): string {
-  const header = 'Name,Phone,Target,Movement';
+  const header = 'Name,Phone,Target,Movement,AvgDaysArrears,Count';
   const rows = [
-    'Agent 1,097-XXX-XXX,80000,58115',
-    'Agent 2,076-XXX-XXX,100000,41986',
+    'Agent 1,097-XXX-XXX,80000,58115,45,120',
+    'Agent 2,076-XXX-XXX,100000,41986,62,98',
   ];
   return [header, ...rows].join('\n');
 }
@@ -69,6 +69,8 @@ export function parseCollectionsCsv(text: string): AgentData[] {
   const phoneIdx = header.findIndex(h => /phone/i.test(h));
   const targetIdx = header.findIndex(h => /target/i.test(h));
   const movementIdx = header.findIndex(h => /movement/i.test(h));
+  const arrearsIdx = header.findIndex(h => /arr/i.test(h));
+  const countIdx = header.findIndex(h => /count/i.test(h));
 
   if (nameIdx === -1 || targetIdx === -1 || movementIdx === -1) {
     throw new Error('CSV must have Name, Target, and Movement columns');
@@ -79,6 +81,8 @@ export function parseCollectionsCsv(text: string): AgentData[] {
     phone: cols[phoneIdx] || '',
     target: Number(cols[targetIdx]) || 0,
     movement: Number(cols[movementIdx]) || 0,
+    avgDaysArrears: arrearsIdx !== -1 ? Number(cols[arrearsIdx]) || 0 : 0,
+    count: countIdx !== -1 ? Number(cols[countIdx]) || 0 : 0,
   }));
 }
 
