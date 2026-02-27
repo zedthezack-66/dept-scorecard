@@ -28,8 +28,8 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
     className="overflow-hidden rounded-lg border border-border bg-card shadow-card"
   >
     <div className="flex items-center justify-between bg-primary px-6 py-4">
-      <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Agent Leaderboard</span>
-      <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">
+      <span className="font-display text-[24px] tracking-[3px] text-primary-foreground">Agent Leaderboard</span>
+      <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[13px] font-bold tracking-[2px] uppercase text-primary-foreground/50">
         {rows.length} Agents
       </span>
     </div>
@@ -37,14 +37,14 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b-2 border-border bg-secondary">
-            <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">#</th>
-            <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Agent</th>
-            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Target (K)</th>
-            <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Movement (K)</th>
-            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Variance (K)</th>
-            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Avg Days</th>
-            <th className="hidden px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Count</th>
-            <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Rate</th>
+            <th className="px-5 py-3 text-left text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground">#</th>
+            <th className="px-5 py-3 text-left text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground">Agent</th>
+            <th className="hidden px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Target (K)</th>
+            <th className="px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground">Movement (K)</th>
+            <th className="hidden px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground md:table-cell">Variance (K)</th>
+            <th className="hidden px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Avg Days</th>
+            <th className="hidden px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground lg:table-cell">Count</th>
+            <th className="px-5 py-3 text-right text-[13px] font-bold tracking-[2px] uppercase text-muted-foreground">Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -54,13 +54,13 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
                 {i < 3 ? medals[i] : i + 1}
               </td>
               <td className="px-5 py-3.5">
-                <div className="text-[15px] font-semibold text-foreground">{r.name}</div>
-                <div className="text-[12px] text-muted-foreground">{r.phone}</div>
+                <div className="text-[16px] font-semibold text-foreground">{r.name}</div>
+                <div className="text-[13px] text-muted-foreground">{r.phone}</div>
               </td>
-              <td className="hidden px-5 py-3.5 text-right text-[14px] md:table-cell">{fmt(r.target)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[15px] md:table-cell">{fmt(r.target)}</td>
               <td className="px-5 py-3.5 text-right">
                 <div className="flex flex-col items-end gap-1.5">
-                  <span className="text-[14px] font-semibold">{fmt(r.movement)}</span>
+                  <span className="text-[15px] font-semibold">{fmt(r.movement)}</span>
                   <div className="h-[4px] w-[80px] overflow-hidden rounded-full bg-secondary">
                     <motion.div
                       className={`h-full rounded-full ${barColor(r.rate)}`}
@@ -71,11 +71,11 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
                   </div>
                 </div>
               </td>
-              <td className="hidden px-5 py-3.5 text-right text-[14px] font-medium text-amber md:table-cell">{fmt(r.variance)}</td>
-              <td className="hidden px-5 py-3.5 text-right text-[14px] lg:table-cell">{fmt(r.avgDaysArrears)}</td>
-              <td className="hidden px-5 py-3.5 text-right text-[14px] lg:table-cell">{fmt(r.count)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[15px] font-medium text-amber md:table-cell">{fmt(r.variance)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[15px] lg:table-cell">{fmt(r.avgDaysArrears)}</td>
+              <td className="hidden px-5 py-3.5 text-right text-[15px] lg:table-cell">{fmt(r.count)}</td>
               <td className="px-5 py-3.5 text-right">
-                <span className={`inline-flex min-w-[56px] items-center justify-center rounded-md px-3 py-1 font-display text-[17px] tracking-wider ${rateClass(r.rate)}`}>
+                <span className={`inline-flex min-w-[56px] items-center justify-center rounded-md px-3 py-1 font-display text-[19px] tracking-wider ${rateClass(r.rate)}`}>
                   {r.rate}%
                 </span>
               </td>
@@ -85,14 +85,14 @@ const AgentLeaderboard = ({ rows, totT, totM, totV, rate, maxM }: AgentLeaderboa
           <tr className="border-none bg-primary">
             <td className="px-5 py-3.5 font-display text-[22px] text-primary-foreground/20">Σ</td>
             <td className="px-5 py-3.5">
-              <div className="text-[15px] font-semibold text-primary-foreground/90">Grand Total</div>
-              <div className="text-[12px] text-primary-foreground/30">{rows.length} agents</div>
+              <div className="text-[16px] font-semibold text-primary-foreground/90">Grand Total</div>
+              <div className="text-[13px] text-primary-foreground/30">{rows.length} agents</div>
             </td>
-            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground md:table-cell">{fmt(totT)}</td>
-            <td className="px-5 py-3.5 text-right text-[14px] font-bold text-emerald">{fmt(totM)}</td>
-            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-red md:table-cell">{fmt(totV)}</td>
-            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground lg:table-cell">—</td>
-            <td className="hidden px-5 py-3.5 text-right text-[14px] font-bold text-primary-foreground lg:table-cell">{fmt(rows.reduce((s, r) => s + r.count, 0))}</td>
+            <td className="hidden px-5 py-3.5 text-right text-[15px] font-bold text-primary-foreground md:table-cell">{fmt(totT)}</td>
+            <td className="px-5 py-3.5 text-right text-[15px] font-bold text-emerald">{fmt(totM)}</td>
+            <td className="hidden px-5 py-3.5 text-right text-[15px] font-bold text-red md:table-cell">{fmt(totV)}</td>
+            <td className="hidden px-5 py-3.5 text-right text-[15px] font-bold text-primary-foreground lg:table-cell">—</td>
+            <td className="hidden px-5 py-3.5 text-right text-[15px] font-bold text-primary-foreground lg:table-cell">{fmt(rows.reduce((s, r) => s + r.count, 0))}</td>
             <td className="px-5 py-3.5 text-right">
               <span className="inline-flex min-w-[56px] items-center justify-center rounded-md bg-primary-foreground/10 px-3 py-1 font-display text-[17px] tracking-wider text-gold-light">
                 {rate}%

@@ -27,17 +27,17 @@ const CollectionsTab = () => {
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-7">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary pb-5">
         <div>
-          <h1 className="font-display text-[clamp(30px,4.5vw,54px)] leading-none text-foreground">
+          <h1 className="font-display text-[clamp(34px,5vw,60px)] leading-none text-foreground">
             Department <span className="text-accent">Performance</span>
           </h1>
-          <div className="mt-1.5 text-[13px] font-semibold tracking-[3px] uppercase text-muted-foreground">
+          <div className="mt-1.5 text-[15px] font-semibold tracking-[3px] uppercase text-muted-foreground">
             Collections Division — Weekly Summary
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <div className="rounded-lg bg-primary px-5 py-2.5 text-right">
-            <div className="text-[10px] tracking-[3px] uppercase text-primary-foreground/35">Report Date</div>
-            <div className="font-display text-[16px] tracking-[2px] text-accent">{dateStr}</div>
+            <div className="text-[12px] tracking-[3px] uppercase text-primary-foreground/35">Report Date</div>
+            <div className="font-display text-[20px] tracking-[2px] text-accent">{dateStr}</div>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ const CollectionsTab = () => {
         />
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-[12px] tracking-wider text-muted-foreground">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-[14px] tracking-wider text-muted-foreground">
         <span>Collections Division · Weekly Performance Report</span>
         <span>{now.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</span>
       </div>
