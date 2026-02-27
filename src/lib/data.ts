@@ -75,9 +75,7 @@ export const MONTHLY_COUNTER: MonthlyCounter[] = [
 // Utility functions
 export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
 export const fmtK = (n: number) => {
-  if (n >= 1000000) return 'K ' + (n / 1000000).toFixed(2) + 'M';
-  if (n >= 1000) return 'K ' + Number((n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)).toLocaleString('en-ZM') + 'K';
-  return 'K ' + Number(n).toLocaleString('en-ZM');
+  return 'K' + Number(n).toLocaleString('en-ZM');
 };
 
 export function getStatus(actual: number | null, target: number, lowerIsBetter: boolean): string {
