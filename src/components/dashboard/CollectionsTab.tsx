@@ -5,7 +5,6 @@ import KPIStrip, { type KPIItem } from './KPIStrip';
 import AchievementBar from './AchievementBar';
 import AgentLeaderboard from './AgentLeaderboard';
 import SidePanel from './SidePanel';
-import DataToolbar from './DataToolbar';
 
 const CollectionsTab = () => {
   const { agents } = useDashboard();
@@ -43,7 +42,6 @@ const CollectionsTab = () => {
         </div>
       </div>
 
-      <DataToolbar tab="collections" />
       <KPIStrip items={kpis} />
       <AchievementBar rate={rate} collected={totM} target={totT} />
 
