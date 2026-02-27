@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { getStatus, fmt, fmtK } from '@/lib/data';
 import { useDashboard } from '@/lib/dashboard-store';
-import DataToolbar from './DataToolbar';
 
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string }> = {
@@ -56,8 +55,6 @@ const ScorecardTab = () => {
           </div>
         </div>
       </div>
-
-      <DataToolbar tab="scorecard" />
 
       {/* Score summary KPIs */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
