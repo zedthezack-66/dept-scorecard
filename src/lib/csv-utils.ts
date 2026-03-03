@@ -3,22 +3,31 @@ import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER } from './data';
 
 // ── CSV Generation ──
 
-export function generateCollectionsTemplate(): string {
+export function generateCollectionsTemplate(agents?: AgentData[]): string {
   const header = 'Name,Phone,Target,Movement,AvgDaysArrears,Count';
-  const rows = [
-    'Agent 1,097-XXX-XXX,80000,58115,45,120',
-    'Agent 2,076-XXX-XXX,100000,41986,62,98',
+  const data = agents && agents.length > 0 ? agents : [
+    { name: 'Agent 1', phone: '097-XXX-XXX', target: 80000, movement: 58115, avgDaysArrears: 45, count: 120 },
+    { name: 'Agent 2', phone: '076-XXX-XXX', target: 100000, movement: 41986, avgDaysArrears: 62, count: 98 },
   ];
+  const rows = data.map(a => [a.name, a.phone, a.target, a.movement, a.avgDaysArrears, a.count].join(','));
   return [header, ...rows].join('\n');
 }
 
-export function generateScorecardTemplate(): string {
+export function generateScorecardTemplate(
+  metricsData?: MetricData[],
+  weeklyData?: WeeklyData[],
+  monthlyData?: MonthlyCounter[],
+): string {
   const sections: string[] = [];
 
-  // METRICS section — match all 8 default metrics exactly
+  const metrics = metricsData && metricsData.length > 0 ? metricsData : METRICS_CONFIG;
+  const weekly = weeklyData && weeklyData.length > 0 ? weeklyData : WEEKLY_CONFIG;
+  const monthly = monthlyData && monthlyData.length > 0 ? monthlyData : MONTHLY_COUNTER;
+
+  // METRICS section
   sections.push('## METRICS');
   sections.push('Key,Name,Target,Unit,LowerIsBetter,Type,Actual,Jan,Feb,Mar');
-  for (const m of METRICS_CONFIG) {
+  for (const m of metrics) {
     sections.push([
       m.key,
       m.name,
@@ -37,7 +46,7 @@ export function generateScorecardTemplate(): string {
   sections.push('');
   sections.push('## WEEKLY');
   sections.push('Week,Start,End,Target,Actual');
-  for (const w of WEEKLY_CONFIG) {
+  for (const w of weekly) {
     sections.push([w.week, w.start, w.end, w.target, w.actual ?? ''].join(','));
   }
 
@@ -45,7 +54,7 @@ export function generateScorecardTemplate(): string {
   sections.push('');
   sections.push('## MONTHLY');
   sections.push('Month,Target,Actual');
-  for (const m of MONTHLY_COUNTER) {
+  for (const m of monthly) {
     sections.push([m.month, m.target, m.actual ?? ''].join(','));
   }
 
