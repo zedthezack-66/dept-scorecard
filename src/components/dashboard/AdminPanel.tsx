@@ -43,25 +43,25 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
 
   const handleImport = () => fileRef.current?.click();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
         const text = ev.target?.result as string;
         if (tab === 'collections') {
           const agents = parseCollectionsCsv(text);
           if (agents.length === 0) throw new Error('No data rows found');
-          store.setAgents(agents);
-          toast.success(`Imported ${agents.length} agents`);
+          await store.setAgents(agents);
+          toast.success(`Imported ${agents.length} agents — synced to all users`);
         } else {
           const { metrics, weekly, monthly } = parseScorecardCsv(text);
-          if (metrics.length > 0) store.setMetrics(metrics);
-          if (weekly.length > 0) store.setWeekly(weekly);
-          if (monthly.length > 0) store.setMonthly(monthly);
+          if (metrics.length > 0) await store.setMetrics(metrics);
+          if (weekly.length > 0) await store.setWeekly(weekly);
+          if (monthly.length > 0) await store.setMonthly(monthly);
           const count = metrics.length + weekly.length + monthly.length;
-          toast.success(`Imported ${count} records`);
+          toast.success(`Imported ${count} records — synced to all users`);
         }
       } catch (err: any) {
         toast.error(`Import failed: ${err.message}`);
