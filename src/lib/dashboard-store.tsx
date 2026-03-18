@@ -134,6 +134,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await supabase.from('monthly').select('*').order('id');
         if (data?.length) setMonthlyLocal(data.map(dbMonthlyToApp));
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_collections' }, async () => {
+        const { data } = await supabase.from('agent_collections').select('*').order('id');
+        if (data?.length) setAgentCollectionsLocal(data.map(dbAgentCollectionToApp));
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
