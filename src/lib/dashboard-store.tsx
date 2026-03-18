@@ -76,6 +76,16 @@ function dbMonthlyToApp(r: any): MonthlyCounter {
   };
 }
 
+function dbAgentCollectionToApp(r: any): AgentCollectionData {
+  return {
+    agentName: r.agent_name,
+    collectionTarget: Number(r.collection_target),
+    janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
+    febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
+    marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
+  };
+}
+
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [agents, setAgentsLocal] = useState<AgentData[]>(SAMPLE_AGENTS);
   const [metrics, setMetricsLocal] = useState<MetricData[]>(METRICS_CONFIG);
