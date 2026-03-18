@@ -36,7 +36,7 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
     if (tab === 'collections') {
       downloadCsv(generateCollectionsTemplate(store.agents), 'collections_export.csv');
     } else {
-      downloadCsv(generateScorecardTemplate(store.metrics, store.weekly, store.monthly), 'scorecard_export.csv');
+      downloadCsv(generateScorecardTemplate(store.metrics, store.weekly, store.monthly, store.agentCollections), 'scorecard_export.csv');
     }
     toast.success('Template downloaded');
   };
@@ -56,11 +56,12 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
           await store.setAgents(agents);
           toast.success(`Imported ${agents.length} agents — synced to all users`);
         } else {
-          const { metrics, weekly, monthly } = parseScorecardCsv(text);
+          const { metrics, weekly, monthly, agentCollections } = parseScorecardCsv(text);
           if (metrics.length > 0) await store.setMetrics(metrics);
           if (weekly.length > 0) await store.setWeekly(weekly);
           if (monthly.length > 0) await store.setMonthly(monthly);
-          const count = metrics.length + weekly.length + monthly.length;
+          if (agentCollections.length > 0) await store.setAgentCollections(agentCollections);
+          const count = metrics.length + weekly.length + monthly.length + agentCollections.length;
           toast.success(`Imported ${count} records — synced to all users`);
         }
       } catch (err: any) {

@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER,
-  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter,
+  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS,
+  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData,
 } from './data';
 
 interface DashboardState {
@@ -10,11 +10,13 @@ interface DashboardState {
   metrics: MetricData[];
   weekly: WeeklyData[];
   monthly: MonthlyCounter[];
+  agentCollections: AgentCollectionData[];
   loading: boolean;
   setAgents: (agents: AgentData[]) => Promise<void>;
   setMetrics: (metrics: MetricData[]) => Promise<void>;
   setWeekly: (weekly: WeeklyData[]) => Promise<void>;
   setMonthly: (monthly: MonthlyCounter[]) => Promise<void>;
+  setAgentCollections: (data: AgentCollectionData[]) => Promise<void>;
   updateAgentTarget: (index: number, target: number) => void;
   updateMetricTarget: (key: string, target: number) => void;
   updateWeeklyTarget: (index: number, target: number) => void;
@@ -74,26 +76,39 @@ function dbMonthlyToApp(r: any): MonthlyCounter {
   };
 }
 
+function dbAgentCollectionToApp(r: any): AgentCollectionData {
+  return {
+    agentName: r.agent_name,
+    collectionTarget: Number(r.collection_target),
+    janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
+    febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
+    marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
+  };
+}
+
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [agents, setAgentsLocal] = useState<AgentData[]>(SAMPLE_AGENTS);
   const [metrics, setMetricsLocal] = useState<MetricData[]>(METRICS_CONFIG);
   const [weekly, setWeeklyLocal] = useState<WeeklyData[]>(WEEKLY_CONFIG);
   const [monthly, setMonthlyLocal] = useState<MonthlyCounter[]>(MONTHLY_COUNTER);
+  const [agentCollections, setAgentCollectionsLocal] = useState<AgentCollectionData[]>(SAMPLE_AGENT_COLLECTIONS);
   const [loading, setLoading] = useState(true);
 
   // Initial fetch
   useEffect(() => {
     const fetchAll = async () => {
-      const [agentsRes, metricsRes, weeklyRes, monthlyRes] = await Promise.all([
+      const [agentsRes, metricsRes, weeklyRes, monthlyRes, acRes] = await Promise.all([
         supabase.from('agents').select('*').order('id'),
         supabase.from('metrics').select('*').order('id'),
         supabase.from('weekly').select('*').order('id'),
         supabase.from('monthly').select('*').order('id'),
+        supabase.from('agent_collections').select('*').order('id'),
       ]);
       if (agentsRes.data?.length) setAgentsLocal(agentsRes.data.map(dbAgentToApp));
       if (metricsRes.data?.length) setMetricsLocal(metricsRes.data.map(dbMetricToApp));
       if (weeklyRes.data?.length) setWeeklyLocal(weeklyRes.data.map(dbWeeklyToApp));
       if (monthlyRes.data?.length) setMonthlyLocal(monthlyRes.data.map(dbMonthlyToApp));
+      if (acRes.data?.length) setAgentCollectionsLocal(acRes.data.map(dbAgentCollectionToApp));
       setLoading(false);
     };
     fetchAll();
@@ -118,6 +133,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'monthly' }, async () => {
         const { data } = await supabase.from('monthly').select('*').order('id');
         if (data?.length) setMonthlyLocal(data.map(dbMonthlyToApp));
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_collections' }, async () => {
+        const { data } = await supabase.from('agent_collections').select('*').order('id');
+        if (data?.length) setAgentCollectionsLocal(data.map(dbAgentCollectionToApp));
       })
       .subscribe();
 
@@ -184,6 +203,20 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     await supabase.from('monthly').insert(rows);
   }, []);
 
+  // Write agent_collections to Supabase
+  const setAgentCollections = useCallback(async (newData: AgentCollectionData[]) => {
+    setAgentCollectionsLocal(newData);
+    await supabase.from('agent_collections').delete().neq('id', 0);
+    const rows = newData.map(a => ({
+      agent_name: a.agentName,
+      collection_target: a.collectionTarget,
+      jan_actual: a.janActual,
+      feb_actual: a.febActual,
+      mar_actual: a.marActual,
+    }));
+    await supabase.from('agent_collections').insert(rows);
+  }, []);
+
   // Target update helpers - update in Supabase via re-fetching IDs
   const updateAgentTarget = useCallback((index: number, target: number) => {
     setAgentsLocal(prev => {
@@ -237,8 +270,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <DashboardContext.Provider value={{
-      agents, metrics, weekly, monthly, loading,
-      setAgents, setMetrics, setWeekly, setMonthly,
+      agents, metrics, weekly, monthly, agentCollections, loading,
+      setAgents, setMetrics, setWeekly, setMonthly, setAgentCollections,
       updateAgentTarget, updateMetricTarget, updateWeeklyTarget, updateMonthlyTarget,
     }}>
       {children}
