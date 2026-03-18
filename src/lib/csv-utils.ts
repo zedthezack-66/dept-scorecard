@@ -109,17 +109,32 @@ export function parseScorecardCsv(text: string): {
   metrics: MetricData[];
   weekly: WeeklyData[];
   monthly: MonthlyCounter[];
+  agentCollections: AgentCollectionData[];
 } {
   const sections = text.split(/^##\s*/m).filter(Boolean);
   const metrics: MetricData[] = [];
   const weekly: WeeklyData[] = [];
   const monthly: MonthlyCounter[] = [];
+  const agentCollections: AgentCollectionData[] = [];
 
   for (const section of sections) {
     const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
     const sectionName = lines[0].toUpperCase();
 
-    if (sectionName.includes('METRIC')) {
+    if (sectionName.includes('AGENT_COLLECTION')) {
+      const dataLines = parseCsvLines(lines.slice(1).join('\n'));
+      if (dataLines.length < 2) continue;
+      for (let i = 1; i < dataLines.length; i++) {
+        const c = dataLines[i];
+        agentCollections.push({
+          agentName: c[0] || `Agent ${i}`,
+          collectionTarget: Number(c[1]) || 0,
+          janActual: c[2] ? Number(c[2]) : null,
+          febActual: c[3] ? Number(c[3]) : null,
+          marActual: c[4] ? Number(c[4]) : null,
+        });
+      }
+    } else if (sectionName.includes('METRIC')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
       for (let i = 1; i < dataLines.length; i++) {
@@ -164,7 +179,7 @@ export function parseScorecardCsv(text: string): {
     }
   }
 
-  return { metrics, weekly, monthly };
+  return { metrics, weekly, monthly, agentCollections };
 }
 
 // ── Download helper ──
