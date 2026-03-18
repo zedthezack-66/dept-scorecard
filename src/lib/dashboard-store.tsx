@@ -10,11 +10,13 @@ interface DashboardState {
   metrics: MetricData[];
   weekly: WeeklyData[];
   monthly: MonthlyCounter[];
+  agentCollections: AgentCollectionData[];
   loading: boolean;
   setAgents: (agents: AgentData[]) => Promise<void>;
   setMetrics: (metrics: MetricData[]) => Promise<void>;
   setWeekly: (weekly: WeeklyData[]) => Promise<void>;
   setMonthly: (monthly: MonthlyCounter[]) => Promise<void>;
+  setAgentCollections: (data: AgentCollectionData[]) => Promise<void>;
   updateAgentTarget: (index: number, target: number) => void;
   updateMetricTarget: (key: string, target: number) => void;
   updateWeeklyTarget: (index: number, target: number) => void;
