@@ -97,16 +97,18 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   // Initial fetch
   useEffect(() => {
     const fetchAll = async () => {
-      const [agentsRes, metricsRes, weeklyRes, monthlyRes] = await Promise.all([
+      const [agentsRes, metricsRes, weeklyRes, monthlyRes, acRes] = await Promise.all([
         supabase.from('agents').select('*').order('id'),
         supabase.from('metrics').select('*').order('id'),
         supabase.from('weekly').select('*').order('id'),
         supabase.from('monthly').select('*').order('id'),
+        supabase.from('agent_collections').select('*').order('id'),
       ]);
       if (agentsRes.data?.length) setAgentsLocal(agentsRes.data.map(dbAgentToApp));
       if (metricsRes.data?.length) setMetricsLocal(metricsRes.data.map(dbMetricToApp));
       if (weeklyRes.data?.length) setWeeklyLocal(weeklyRes.data.map(dbWeeklyToApp));
       if (monthlyRes.data?.length) setMonthlyLocal(monthlyRes.data.map(dbMonthlyToApp));
+      if (acRes.data?.length) setAgentCollectionsLocal(acRes.data.map(dbAgentCollectionToApp));
       setLoading(false);
     };
     fetchAll();
