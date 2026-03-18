@@ -294,6 +294,98 @@ const ScorecardTab = () => {
         </motion.div>
       </div>
 
+      {/* Agent Collection Breakdown */}
+      {agentCollections.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mb-5 overflow-hidden rounded-lg border border-border bg-card shadow-card"
+        >
+          <div className="flex items-center justify-between bg-primary px-6 py-4">
+            <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Agent Collection Breakdown</span>
+            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">
+              {agentCollections.length} Agents
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b-2 border-border bg-secondary">
+                  <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Agent Name</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Collection Target</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Jan Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Feb Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Expected</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Monthly Avg</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  // Count months with data to compute YTD expected
+                  const monthsWithData = agentCollections.reduce((max, a) => {
+                    let count = 0;
+                    if (a.janActual !== null) count++;
+                    if (a.febActual !== null) count++;
+                    if (a.marActual !== null) count++;
+                    return Math.max(max, count);
+                  }, 0) || 1;
+
+                  const rows = agentCollections.map((a, i) => {
+                    const actuals = [a.janActual, a.febActual, a.marActual].filter(v => v !== null) as number[];
+                    const ytdActual = actuals.reduce((s, v) => s + v, 0);
+                    const ytdExpected = a.collectionTarget * monthsWithData;
+                    const monthlyAvg = actuals.length > 0 ? Math.round(ytdActual / actuals.length) : 0;
+                    const rate = ytdExpected > 0 ? Math.round((ytdActual / ytdExpected) * 100) : 0;
+                    const rateColor = rate >= 90 ? 'text-emerald' : rate >= 70 ? 'text-amber' : 'text-red';
+
+                    return (
+                      <tr key={i} className="border-b border-border hover:bg-primary/[0.03]">
+                        <td className="px-5 py-3.5 text-[14px] font-semibold text-foreground">{a.agentName}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(a.collectionTarget)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">{a.janActual !== null ? `K ${fmt(a.janActual)}` : <span className="italic text-border">—</span>}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">{a.febActual !== null ? `K ${fmt(a.febActual)}` : <span className="italic text-border">—</span>}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">{a.marActual !== null ? `K ${fmt(a.marActual)}` : <span className="italic text-border">—</span>}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(ytdExpected)}</td>
+                        <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${rateColor}`}>K {fmt(ytdActual)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(monthlyAvg)}</td>
+                      </tr>
+                    );
+                  });
+
+                  // Totals row
+                  const totTarget = agentCollections.reduce((s, a) => s + a.collectionTarget, 0);
+                  const totJan = agentCollections.reduce((s, a) => s + (a.janActual ?? 0), 0);
+                  const totFeb = agentCollections.reduce((s, a) => s + (a.febActual ?? 0), 0);
+                  const totMar = agentCollections.reduce((s, a) => s + (a.marActual ?? 0), 0);
+                  const totYtdExpected = totTarget * monthsWithData;
+                  const totYtdActual = totJan + totFeb + totMar;
+                  const totMonthlyAvg = monthsWithData > 0 ? Math.round(totYtdActual / monthsWithData) : 0;
+
+                  return (
+                    <>
+                      {rows}
+                      <tr className="border-t-2 border-border bg-secondary font-bold">
+                        <td className="px-5 py-3.5 text-[14px] font-bold text-foreground">TOTAL</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totTarget)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totJan)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totFeb)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMar)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totYtdExpected)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px] font-bold">K {fmt(totYtdActual)}</td>
+                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMonthlyAvg)}</td>
+                      </tr>
+                    </>
+                  );
+                })()}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      )}
+
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-[12px] tracking-wider text-muted-foreground">
         <span>Credit Department · Scorecard Tracker Q1 2026</span>
         <span>{new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</span>
