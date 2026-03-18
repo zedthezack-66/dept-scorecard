@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { getStatus, fmt, fmtK } from '@/lib/data';
 import { useDashboard } from '@/lib/dashboard-store';
+import type { AgentCollectionData } from '@/lib/data';
 
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string }> = {
