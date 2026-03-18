@@ -36,7 +36,7 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
     if (tab === 'collections') {
       downloadCsv(generateCollectionsTemplate(store.agents), 'collections_export.csv');
     } else {
-      downloadCsv(generateScorecardTemplate(store.metrics, store.weekly, store.monthly), 'scorecard_export.csv');
+      downloadCsv(generateScorecardTemplate(store.metrics, store.weekly, store.monthly, store.agentCollections), 'scorecard_export.csv');
     }
     toast.success('Template downloaded');
   };
