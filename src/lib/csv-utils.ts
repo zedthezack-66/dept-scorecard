@@ -17,6 +17,7 @@ export function generateScorecardTemplate(
   metricsData?: MetricData[],
   weeklyData?: WeeklyData[],
   monthlyData?: MonthlyCounter[],
+  agentCollectionsData?: AgentCollectionData[],
 ): string {
   const sections: string[] = [];
 
