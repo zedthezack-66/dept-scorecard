@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER,
-  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter,
+  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS,
+  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData,
 } from './data';
 
 interface DashboardState {
