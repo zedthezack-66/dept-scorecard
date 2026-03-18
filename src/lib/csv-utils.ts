@@ -60,6 +60,14 @@ export function generateScorecardTemplate(
     sections.push([m.month, m.target, m.actual ?? ''].join(','));
   }
 
+  // AGENT COLLECTIONS section
+  sections.push('');
+  sections.push('## AGENT_COLLECTIONS');
+  sections.push('AgentName,CollectionTarget,JanActual,FebActual,MarActual');
+  for (const a of ac) {
+    sections.push([a.agentName, a.collectionTarget, a.janActual ?? '', a.febActual ?? '', a.marActual ?? ''].join(','));
+  }
+
   return sections.join('\n');
 }
 
