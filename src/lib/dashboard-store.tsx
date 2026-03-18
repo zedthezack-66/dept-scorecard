@@ -91,6 +91,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [metrics, setMetricsLocal] = useState<MetricData[]>(METRICS_CONFIG);
   const [weekly, setWeeklyLocal] = useState<WeeklyData[]>(WEEKLY_CONFIG);
   const [monthly, setMonthlyLocal] = useState<MonthlyCounter[]>(MONTHLY_COUNTER);
+  const [agentCollections, setAgentCollectionsLocal] = useState<AgentCollectionData[]>(SAMPLE_AGENT_COLLECTIONS);
   const [loading, setLoading] = useState(true);
 
   // Initial fetch
