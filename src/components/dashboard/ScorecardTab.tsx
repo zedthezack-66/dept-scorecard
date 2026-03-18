@@ -24,7 +24,7 @@ const barColorClass = (status: string) =>
   status === 'on-track' ? 'bg-emerald' : status === 'at-risk' ? 'bg-amber' : status === 'off-track' ? 'bg-red' : 'bg-border';
 
 const ScorecardTab = () => {
-  const { metrics, weekly, monthly } = useDashboard();
+  const { metrics, weekly, monthly, agentCollections } = useDashboard();
 
   const counts = useMemo(() => {
     let on = 0, at = 0, off = 0;
