@@ -203,6 +203,20 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     await supabase.from('monthly').insert(rows);
   }, []);
 
+  // Write agent_collections to Supabase
+  const setAgentCollections = useCallback(async (newData: AgentCollectionData[]) => {
+    setAgentCollectionsLocal(newData);
+    await supabase.from('agent_collections').delete().neq('id', 0);
+    const rows = newData.map(a => ({
+      agent_name: a.agentName,
+      collection_target: a.collectionTarget,
+      jan_actual: a.janActual,
+      feb_actual: a.febActual,
+      mar_actual: a.marActual,
+    }));
+    await supabase.from('agent_collections').insert(rows);
+  }, []);
+
   // Target update helpers - update in Supabase via re-fetching IDs
   const updateAgentTarget = useCallback((index: number, target: number) => {
     setAgentsLocal(prev => {
