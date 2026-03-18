@@ -24,6 +24,7 @@ export function generateScorecardTemplate(
   const metrics = metricsData && metricsData.length > 0 ? metricsData : METRICS_CONFIG;
   const weekly = weeklyData && weeklyData.length > 0 ? weeklyData : WEEKLY_CONFIG;
   const monthly = monthlyData && monthlyData.length > 0 ? monthlyData : MONTHLY_COUNTER;
+  const ac = agentCollectionsData && agentCollectionsData.length > 0 ? agentCollectionsData : SAMPLE_AGENT_COLLECTIONS;
 
   // METRICS section
   sections.push('## METRICS');
