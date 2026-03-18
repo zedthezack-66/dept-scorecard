@@ -1,5 +1,5 @@
-import type { AgentData, MetricData, WeeklyData, MonthlyCounter } from './data';
-import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER } from './data';
+import type { AgentData, MetricData, WeeklyData, MonthlyCounter, AgentCollectionData } from './data';
+import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS } from './data';
 
 // ── CSV Generation ──
 
