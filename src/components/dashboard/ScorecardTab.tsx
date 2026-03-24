@@ -337,6 +337,7 @@ const ScorecardTab = () => {
                     const ytdActual = actuals.reduce((s, v) => s + v, 0);
                     const ytdExpected = a.collectionTarget * monthsWithData;
                     const monthlyAvg = actuals.length > 0 ? Math.round(ytdActual / actuals.length) : 0;
+                    const ytdVariance = ytdActual - ytdExpected;
                     const rate = ytdExpected > 0 ? Math.round((ytdActual / ytdExpected) * 100) : 0;
                     const rateColor = rate >= 90 ? 'text-emerald' : rate >= 70 ? 'text-amber' : 'text-red';
 
@@ -349,6 +350,7 @@ const ScorecardTab = () => {
                         <td className="px-5 py-3.5 text-right text-[14px]">{a.marActual !== null ? `K ${fmt(a.marActual)}` : <span className="italic text-border">—</span>}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(ytdExpected)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${rateColor}`}>K {fmt(ytdActual)}</td>
+                        <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${ytdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{ytdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(ytdVariance))}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(monthlyAvg)}</td>
                       </tr>
                     );
