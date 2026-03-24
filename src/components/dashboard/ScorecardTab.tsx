@@ -208,44 +208,42 @@ const ScorecardTab = () => {
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
             <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">Q1 2026</span>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b-2 border-border bg-secondary">
-                  <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Metric</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Target</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Jan</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Feb</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Q Avg</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {metrics.filter(m => m.jan !== null || m.feb !== null || m.mar !== null).map(m => {
-                  const vals = [m.jan, m.feb, m.mar].filter(v => v !== null) as number[];
-                  const qAvg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-                  const status = getStatus(qAvg, m.target, m.lowerIsBetter);
-                  return (
-                    <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                      <td className="px-5 py-3 text-[14px] font-semibold text-foreground">{m.name.split('—')[0].trim()}</td>
-                      <td className="px-5 py-3 text-right text-[14px]">{m.target}{m.unit}</td>
-                      <td className="px-5 py-3 text-right text-[14px]">{m.jan !== null ? `${m.jan}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                      <td className="px-5 py-3 text-right text-[14px]">{m.feb !== null ? `${m.feb}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                      <td className="px-5 py-3 text-right text-[14px]">{m.mar !== null ? `${m.mar}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                      <td className="px-5 py-3 text-right">
-                        {qAvg !== null
-                          ? <span className="font-display text-[20px] tracking-wider">{qAvg.toFixed(1)}{m.unit}</span>
-                          : <span className="italic text-border">—</span>
-                        }
-                      </td>
-                      <td className="px-5 py-3 text-right">{statusBadge(status)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <table className="w-full border-collapse table-fixed">
+            <thead>
+              <tr className="border-b-2 border-border bg-secondary">
+                <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
+                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Jan</th>
+                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Feb</th>
+                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Mar</th>
+                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q Avg</th>
+                <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metrics.filter(m => m.jan !== null || m.feb !== null || m.mar !== null).map(m => {
+                const vals = [m.jan, m.feb, m.mar].filter(v => v !== null) as number[];
+                const qAvg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+                const status = getStatus(qAvg, m.target, m.lowerIsBetter);
+                return (
+                  <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
+                    <td className="px-3 py-3 text-[13px] font-semibold text-foreground truncate">{m.name.split('—')[0].trim()}</td>
+                    <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
+                    <td className="px-2 py-3 text-right text-[13px]">{m.jan !== null ? `${m.jan}${m.unit}` : <span className="italic text-border">—</span>}</td>
+                    <td className="px-2 py-3 text-right text-[13px]">{m.feb !== null ? `${m.feb}${m.unit}` : <span className="italic text-border">—</span>}</td>
+                    <td className="px-2 py-3 text-right text-[13px]">{m.mar !== null ? `${m.mar}${m.unit}` : <span className="italic text-border">—</span>}</td>
+                    <td className="px-2 py-3 text-right">
+                      {qAvg !== null
+                        ? <span className="font-display text-[18px] tracking-wider">{qAvg.toFixed(1)}{m.unit}</span>
+                        : <span className="italic text-border">—</span>
+                      }
+                    </td>
+                    <td className="px-2 py-3 text-right">{statusBadge(status)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </motion.div>
 
         <motion.div
@@ -319,6 +317,7 @@ const ScorecardTab = () => {
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar Actual</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Expected</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Variance</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Monthly Avg</th>
                 </tr>
               </thead>
@@ -338,6 +337,7 @@ const ScorecardTab = () => {
                     const ytdActual = actuals.reduce((s, v) => s + v, 0);
                     const ytdExpected = a.collectionTarget * monthsWithData;
                     const monthlyAvg = actuals.length > 0 ? Math.round(ytdActual / actuals.length) : 0;
+                    const ytdVariance = ytdActual - ytdExpected;
                     const rate = ytdExpected > 0 ? Math.round((ytdActual / ytdExpected) * 100) : 0;
                     const rateColor = rate >= 90 ? 'text-emerald' : rate >= 70 ? 'text-amber' : 'text-red';
 
@@ -350,6 +350,7 @@ const ScorecardTab = () => {
                         <td className="px-5 py-3.5 text-right text-[14px]">{a.marActual !== null ? `K ${fmt(a.marActual)}` : <span className="italic text-border">—</span>}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(ytdExpected)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${rateColor}`}>K {fmt(ytdActual)}</td>
+                        <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${ytdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{ytdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(ytdVariance))}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(monthlyAvg)}</td>
                       </tr>
                     );
@@ -362,6 +363,7 @@ const ScorecardTab = () => {
                   const totMar = agentCollections.reduce((s, a) => s + (a.marActual ?? 0), 0);
                   const totYtdExpected = totTarget * monthsWithData;
                   const totYtdActual = totJan + totFeb + totMar;
+                  const totYtdVariance = totYtdActual - totYtdExpected;
                   const totMonthlyAvg = monthsWithData > 0 ? Math.round(totYtdActual / monthsWithData) : 0;
 
                   return (
@@ -375,6 +377,7 @@ const ScorecardTab = () => {
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMar)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totYtdExpected)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px] font-bold">K {fmt(totYtdActual)}</td>
+                        <td className={`px-5 py-3.5 text-right text-[14px] font-bold ${totYtdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{totYtdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(totYtdVariance))}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMonthlyAvg)}</td>
                       </tr>
                     </>
