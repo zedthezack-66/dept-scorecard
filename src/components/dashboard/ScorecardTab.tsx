@@ -317,6 +317,7 @@ const ScorecardTab = () => {
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar Actual</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Expected</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Actual</th>
+                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Variance</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Monthly Avg</th>
                 </tr>
               </thead>
