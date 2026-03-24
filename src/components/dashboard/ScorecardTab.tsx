@@ -363,6 +363,7 @@ const ScorecardTab = () => {
                   const totMar = agentCollections.reduce((s, a) => s + (a.marActual ?? 0), 0);
                   const totYtdExpected = totTarget * monthsWithData;
                   const totYtdActual = totJan + totFeb + totMar;
+                  const totYtdVariance = totYtdActual - totYtdExpected;
                   const totMonthlyAvg = monthsWithData > 0 ? Math.round(totYtdActual / monthsWithData) : 0;
 
                   return (
@@ -376,6 +377,7 @@ const ScorecardTab = () => {
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMar)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totYtdExpected)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px] font-bold">K {fmt(totYtdActual)}</td>
+                        <td className={`px-5 py-3.5 text-right text-[14px] font-bold ${totYtdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{totYtdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(totYtdVariance))}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMonthlyAvg)}</td>
                       </tr>
                     </>
