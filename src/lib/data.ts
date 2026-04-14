@@ -115,12 +115,14 @@ export function getStatus(actual: number | null, target: number, lowerIsBetter: 
   if (lowerIsBetter) {
     const pct = actual / target;
     if (pct <= 1) return 'on-track';
-    if (pct <= 1.15) return 'at-risk';
+    if (pct <= 1.10) return 'good';
+    if (pct <= 1.25) return 'at-risk';
     return 'off-track';
   } else {
     const pct = actual / target;
     if (pct >= 1) return 'on-track';
-    if (pct >= 0.85) return 'at-risk';
+    if (pct >= 0.90) return 'good';
+    if (pct >= 0.75) return 'at-risk';
     return 'off-track';
   }
 }

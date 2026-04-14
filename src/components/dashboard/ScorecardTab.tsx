@@ -7,6 +7,7 @@ import type { AgentCollectionData, AgentSettlementData } from '@/lib/data';
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string }> = {
     'on-track': { bg: 'bg-emerald/15', text: 'text-emerald', label: 'On Track' },
+    'good': { bg: 'bg-blue-500/15', text: 'text-blue-500', label: 'Good' },
     'at-risk': { bg: 'bg-amber/20', text: 'text-amber', label: 'At Risk' },
     'off-track': { bg: 'bg-red/15', text: 'text-red', label: 'Off Track' },
     'pending': { bg: 'bg-secondary', text: 'text-muted-foreground', label: 'Pending' },
@@ -21,20 +22,21 @@ const statusBadge = (status: string) => {
 };
 
 const barColorClass = (status: string) =>
-  status === 'on-track' ? 'bg-emerald' : status === 'at-risk' ? 'bg-amber' : status === 'off-track' ? 'bg-red' : 'bg-border';
+  status === 'on-track' ? 'bg-emerald' : status === 'good' ? 'bg-blue-500' : status === 'at-risk' ? 'bg-amber' : status === 'off-track' ? 'bg-red' : 'bg-border';
 
 const ScorecardTab = () => {
   const { metrics, weekly, monthly, agentCollections, agentSettlements } = useDashboard();
 
   const counts = useMemo(() => {
-    let on = 0, at = 0, off = 0;
+    let on = 0, good = 0, at = 0, off = 0;
     metrics.forEach(m => {
       const s = getStatus(m.actual, m.target, m.lowerIsBetter);
       if (s === 'on-track') on++;
+      else if (s === 'good') good++;
       else if (s === 'at-risk') at++;
       else if (s === 'off-track') off++;
     });
-    return { on, at, off };
+    return { on, good, at, off };
   }, [metrics]);
 
   return (
@@ -58,9 +60,10 @@ const ScorecardTab = () => {
       </div>
 
       {/* Score summary KPIs */}
-      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
           { label: 'On Track', value: counts.on, color: 'text-emerald' },
+          { label: 'Good', value: counts.good, color: 'text-blue-500' },
           { label: 'At Risk', value: counts.at, color: 'text-amber' },
           { label: 'Off Track', value: counts.off, color: 'text-red' },
         ].map((item, i) => (
@@ -227,7 +230,7 @@ const ScorecardTab = () => {
                 const status = getStatus(qAvg, m.target, m.lowerIsBetter);
                 return (
                   <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                    <td className="px-3 py-3 text-[13px] font-semibold text-foreground truncate">{m.name.split('—')[0].trim()}</td>
+                    <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
                     <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
                     <td className="px-2 py-3 text-right text-[13px]">{m.jan !== null ? `${m.jan}${m.unit}` : <span className="italic text-border">—</span>}</td>
                     <td className="px-2 py-3 text-right text-[13px]">{m.feb !== null ? `${m.feb}${m.unit}` : <span className="italic text-border">—</span>}</td>
