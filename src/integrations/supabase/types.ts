@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_settlements: {
+        Row: {
+          agent_name: string
+          feb_actual: number | null
+          id: number
+          jan_actual: number | null
+          mar_actual: number | null
+          settlement_target: number
+          updated_at: string
+        }
+        Insert: {
+          agent_name: string
+          feb_actual?: number | null
+          id?: never
+          jan_actual?: number | null
+          mar_actual?: number | null
+          settlement_target?: number
+          updated_at?: string
+        }
+        Update: {
+          agent_name?: string
+          feb_actual?: number | null
+          id?: never
+          jan_actual?: number | null
+          mar_actual?: number | null
+          settlement_target?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agents: {
         Row: {
           avg_days_arrears: number
