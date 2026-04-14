@@ -102,7 +102,7 @@ export const SAMPLE_AGENT_SETTLEMENTS: AgentSettlementData[] = [
   { agentName: 'Agent Three', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
   { agentName: 'Agent Four', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
   { agentName: 'Agent Five', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
-
+];
 
 // Utility functions
 export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
