@@ -88,6 +88,28 @@ export const SAMPLE_AGENT_COLLECTIONS: AgentCollectionData[] = [
   { agentName: 'Agent Five', collectionTarget: 145000, janActual: 140000, febActual: 143000, marActual: 147000 },
 ];
 
+export interface AgentSettlementData {
+  agentName: string;
+  settlementTarget: number;
+  janActual: number | null;
+  febActual: number | null;
+  marActual: number | null;
+}
+
+export const SAMPLE_AGENT_SETTLEMENTS: AgentSettlementData[] = [
+  { agentName: 'Tambudzai Madiri', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
+  { agentName: 'Mulenga Kasonde', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
+  { agentName: 'Agent Three', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
+  { agentName: 'Agent Four', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
+  { agentName: 'Agent Five', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
+];
+  { agentName: 'Tambudzai Madiri', collectionTarget: 150000, janActual: 145000, febActual: 148000, marActual: 152000 },
+  { agentName: 'Mulenga Kasonde', collectionTarget: 125000, janActual: 122000, febActual: 125000, marActual: 128000 },
+  { agentName: 'Agent Three', collectionTarget: 140000, janActual: 135000, febActual: 138000, marActual: 142000 },
+  { agentName: 'Agent Four', collectionTarget: 130000, janActual: 128000, febActual: 131000, marActual: 134000 },
+  { agentName: 'Agent Five', collectionTarget: 145000, janActual: 140000, febActual: 143000, marActual: 147000 },
+];
+
 // Utility functions
 export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
 export const fmtK = (n: number) => {

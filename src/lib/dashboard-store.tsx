@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS,
-  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData,
+  SAMPLE_AGENTS, METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS, SAMPLE_AGENT_SETTLEMENTS,
+  type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData, type AgentSettlementData,
+} from './data';
 } from './data';
 
 interface DashboardState {
@@ -11,12 +12,14 @@ interface DashboardState {
   weekly: WeeklyData[];
   monthly: MonthlyCounter[];
   agentCollections: AgentCollectionData[];
+  agentSettlements: AgentSettlementData[];
   loading: boolean;
   setAgents: (agents: AgentData[]) => Promise<void>;
   setMetrics: (metrics: MetricData[]) => Promise<void>;
   setWeekly: (weekly: WeeklyData[]) => Promise<void>;
   setMonthly: (monthly: MonthlyCounter[]) => Promise<void>;
   setAgentCollections: (data: AgentCollectionData[]) => Promise<void>;
+  setAgentSettlements: (data: AgentSettlementData[]) => Promise<void>;
   updateAgentTarget: (index: number, target: number) => void;
   updateMetricTarget: (key: string, target: number) => void;
   updateWeeklyTarget: (index: number, target: number) => void;
@@ -80,6 +83,16 @@ function dbAgentCollectionToApp(r: any): AgentCollectionData {
   return {
     agentName: r.agent_name,
     collectionTarget: Number(r.collection_target),
+    janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
+    febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
+    marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
+  };
+}
+
+function dbAgentSettlementToApp(r: any): AgentSettlementData {
+  return {
+    agentName: r.agent_name,
+    settlementTarget: Number(r.settlement_target),
     janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
     febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
     marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
