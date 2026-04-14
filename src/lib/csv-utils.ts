@@ -1,5 +1,5 @@
-import type { AgentData, MetricData, WeeklyData, MonthlyCounter, AgentCollectionData } from './data';
-import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS } from './data';
+import type { AgentData, MetricData, WeeklyData, MonthlyCounter, AgentCollectionData, AgentSettlementData } from './data';
+import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS, SAMPLE_AGENT_SETTLEMENTS } from './data';
 
 // ── CSV Generation ──
 
@@ -18,6 +18,7 @@ export function generateScorecardTemplate(
   weeklyData?: WeeklyData[],
   monthlyData?: MonthlyCounter[],
   agentCollectionsData?: AgentCollectionData[],
+  agentSettlementsData?: AgentSettlementData[],
 ): string {
   const sections: string[] = [];
 
@@ -25,6 +26,7 @@ export function generateScorecardTemplate(
   const weekly = weeklyData && weeklyData.length > 0 ? weeklyData : WEEKLY_CONFIG;
   const monthly = monthlyData && monthlyData.length > 0 ? monthlyData : MONTHLY_COUNTER;
   const ac = agentCollectionsData && agentCollectionsData.length > 0 ? agentCollectionsData : SAMPLE_AGENT_COLLECTIONS;
+  const as_ = agentSettlementsData && agentSettlementsData.length > 0 ? agentSettlementsData : SAMPLE_AGENT_SETTLEMENTS;
 
   // METRICS section
   sections.push('## METRICS');
@@ -66,6 +68,14 @@ export function generateScorecardTemplate(
   sections.push('AgentName,CollectionTarget,JanActual,FebActual,MarActual');
   for (const a of ac) {
     sections.push([a.agentName, a.collectionTarget, a.janActual ?? '', a.febActual ?? '', a.marActual ?? ''].join(','));
+  }
+
+  // AGENT SETTLEMENTS section
+  sections.push('');
+  sections.push('## AGENT_SETTLEMENTS');
+  sections.push('AgentName,SettlementTarget,JanActual,FebActual,MarActual');
+  for (const a of as_) {
+    sections.push([a.agentName, a.settlementTarget, a.janActual ?? '', a.febActual ?? '', a.marActual ?? ''].join(','));
   }
 
   return sections.join('\n');
@@ -110,18 +120,33 @@ export function parseScorecardCsv(text: string): {
   weekly: WeeklyData[];
   monthly: MonthlyCounter[];
   agentCollections: AgentCollectionData[];
+  agentSettlements: AgentSettlementData[];
 } {
   const sections = text.split(/^##\s*/m).filter(Boolean);
   const metrics: MetricData[] = [];
   const weekly: WeeklyData[] = [];
   const monthly: MonthlyCounter[] = [];
   const agentCollections: AgentCollectionData[] = [];
+  const agentSettlements: AgentSettlementData[] = [];
 
   for (const section of sections) {
     const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
     const sectionName = lines[0].toUpperCase();
 
-    if (sectionName.includes('AGENT_COLLECTION')) {
+    if (sectionName.includes('AGENT_SETTLEMENT')) {
+      const dataLines = parseCsvLines(lines.slice(1).join('\n'));
+      if (dataLines.length < 2) continue;
+      for (let i = 1; i < dataLines.length; i++) {
+        const c = dataLines[i];
+        agentSettlements.push({
+          agentName: c[0] || `Agent ${i}`,
+          settlementTarget: Number(c[1]) || 50000,
+          janActual: c[2] ? Number(c[2]) : null,
+          febActual: c[3] ? Number(c[3]) : null,
+          marActual: c[4] ? Number(c[4]) : null,
+        });
+      }
+    } else if (sectionName.includes('AGENT_COLLECTION')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
       for (let i = 1; i < dataLines.length; i++) {
@@ -179,7 +204,7 @@ export function parseScorecardCsv(text: string): {
     }
   }
 
-  return { metrics, weekly, monthly, agentCollections };
+  return { metrics, weekly, monthly, agentCollections, agentSettlements };
 }
 
 // ── Download helper ──
