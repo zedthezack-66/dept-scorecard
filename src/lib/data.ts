@@ -112,18 +112,21 @@ export const fmtK = (n: number) => {
 
 export function getStatus(actual: number | null, target: number, lowerIsBetter: boolean): string {
   if (actual === null || actual === undefined || isNaN(actual)) return 'pending';
+  const pct = actual / target;
   if (lowerIsBetter) {
-    const pct = actual / target;
-    if (pct <= 1) return 'on-track';
-    if (pct <= 1.10) return 'good';
-    if (pct <= 1.25) return 'at-risk';
-    return 'off-track';
+    // Lower actual = better. pct < 1 means beating target
+    if (pct <= 0.85) return 'outstanding';       // 1 - well below target
+    if (pct <= 1.0) return 'exceed';              // 2 - at or under target
+    if (pct <= 1.15) return 'meet';               // 3 - slightly over
+    if (pct <= 1.30) return 'unsatisfactory';     // 4 - notably over
+    return 'poor';                                 // 5 - far over target
   } else {
-    const pct = actual / target;
-    if (pct >= 1) return 'on-track';
-    if (pct >= 0.90) return 'good';
-    if (pct >= 0.75) return 'at-risk';
-    return 'off-track';
+    // Higher actual = better. pct > 1 means beating target
+    if (pct >= 1.10) return 'outstanding';        // 1 - well above target
+    if (pct >= 1.0) return 'exceed';              // 2 - met or exceeded
+    if (pct >= 0.85) return 'meet';               // 3 - close to target
+    if (pct >= 0.70) return 'unsatisfactory';     // 4 - notably below
+    return 'poor';                                 // 5 - far below target
   }
 }
 

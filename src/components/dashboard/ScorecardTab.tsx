@@ -5,38 +5,48 @@ import { useDashboard } from '@/lib/dashboard-store';
 import type { AgentCollectionData, AgentSettlementData } from '@/lib/data';
 
 const statusBadge = (status: string) => {
-  const map: Record<string, { bg: string; text: string; label: string }> = {
-    'on-track': { bg: 'bg-emerald/15', text: 'text-emerald', label: 'On Track' },
-    'good': { bg: 'bg-blue-500/15', text: 'text-blue-500', label: 'Good' },
-    'at-risk': { bg: 'bg-amber/20', text: 'text-amber', label: 'At Risk' },
-    'off-track': { bg: 'bg-red/15', text: 'text-red', label: 'Off Track' },
-    'pending': { bg: 'bg-secondary', text: 'text-muted-foreground', label: 'Pending' },
+  const map: Record<string, { bg: string; text: string; label: string; rating: number }> = {
+    'outstanding':    { bg: 'bg-[hsl(120,100%,25%)]/15', text: 'text-[hsl(120,100%,25%)]', label: '1 — Outstanding', rating: 1 },
+    'exceed':         { bg: 'bg-[hsl(90,80%,40%)]/15',   text: 'text-[hsl(90,80%,35%)]',  label: '2 — Exceed Expectations', rating: 2 },
+    'meet':           { bg: 'bg-[hsl(55,90%,45%)]/20',   text: 'text-[hsl(45,90%,35%)]',  label: '3 — Meet Expectations', rating: 3 },
+    'unsatisfactory': { bg: 'bg-[hsl(35,100%,50%)]/15',  text: 'text-[hsl(35,100%,40%)]', label: '4 — Unsatisfactory', rating: 4 },
+    'poor':           { bg: 'bg-red/15',                  text: 'text-red',                 label: '5 — Poor Performance', rating: 5 },
+    'pending':        { bg: 'bg-secondary',               text: 'text-muted-foreground',    label: 'Pending', rating: 0 },
   };
   const s = map[status] || map.pending;
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12px] font-bold tracking-wider uppercase whitespace-nowrap ${s.bg} ${s.text}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wider uppercase whitespace-nowrap ${s.bg} ${s.text}`}>
       <span className="h-2 w-2 rounded-full bg-current" />
       {s.label}
     </span>
   );
 };
 
-const barColorClass = (status: string) =>
-  status === 'on-track' ? 'bg-emerald' : status === 'good' ? 'bg-blue-500' : status === 'at-risk' ? 'bg-amber' : status === 'off-track' ? 'bg-red' : 'bg-border';
+const barColorClass = (status: string) => {
+  const map: Record<string, string> = {
+    'outstanding': 'bg-[hsl(120,100%,25%)]',
+    'exceed': 'bg-[hsl(90,80%,40%)]',
+    'meet': 'bg-[hsl(55,90%,45%)]',
+    'unsatisfactory': 'bg-[hsl(35,100%,50%)]',
+    'poor': 'bg-red',
+  };
+  return map[status] || 'bg-border';
+};
 
 const ScorecardTab = () => {
   const { metrics, weekly, monthly, agentCollections, agentSettlements } = useDashboard();
 
   const counts = useMemo(() => {
-    let on = 0, good = 0, at = 0, off = 0;
+    let outstanding = 0, exceed = 0, meet = 0, unsatisfactory = 0, poor = 0;
     metrics.forEach(m => {
       const s = getStatus(m.actual, m.target, m.lowerIsBetter);
-      if (s === 'on-track') on++;
-      else if (s === 'good') good++;
-      else if (s === 'at-risk') at++;
-      else if (s === 'off-track') off++;
+      if (s === 'outstanding') outstanding++;
+      else if (s === 'exceed') exceed++;
+      else if (s === 'meet') meet++;
+      else if (s === 'unsatisfactory') unsatisfactory++;
+      else if (s === 'poor') poor++;
     });
-    return { on, good, at, off };
+    return { outstanding, exceed, meet, unsatisfactory, poor };
   }, [metrics]);
 
   return (
@@ -60,12 +70,13 @@ const ScorecardTab = () => {
       </div>
 
       {/* Score summary KPIs */}
-      <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-5">
         {[
-          { label: 'On Track', value: counts.on, color: 'text-emerald' },
-          { label: 'Good', value: counts.good, color: 'text-blue-500' },
-          { label: 'At Risk', value: counts.at, color: 'text-amber' },
-          { label: 'Off Track', value: counts.off, color: 'text-red' },
+          { label: 'Outstanding', value: counts.outstanding, color: 'text-[hsl(120,100%,25%)]' },
+          { label: 'Exceed', value: counts.exceed, color: 'text-[hsl(90,80%,35%)]' },
+          { label: 'Meet', value: counts.meet, color: 'text-[hsl(45,90%,35%)]' },
+          { label: 'Unsatisfactory', value: counts.unsatisfactory, color: 'text-[hsl(35,100%,40%)]' },
+          { label: 'Poor', value: counts.poor, color: 'text-red' },
         ].map((item, i) => (
           <motion.div
             key={item.label}
