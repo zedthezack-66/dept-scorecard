@@ -29,9 +29,10 @@ export function generateScorecardTemplate(
   const ac = agentCollectionsData && agentCollectionsData.length > 0 ? agentCollectionsData : SAMPLE_AGENT_COLLECTIONS;
   const as_ = agentSettlementsData && agentSettlementsData.length > 0 ? agentSettlementsData : SAMPLE_AGENT_SETTLEMENTS;
 
-  // METRICS section
+  // METRICS section — supports all 12 months
   sections.push('## METRICS');
-  sections.push('Key,Name,Target,Unit,LowerIsBetter,Type,Actual,Jan,Feb,Mar');
+  const monthHeaders = MONTH_KEYS.map(k => MONTH_LABELS[k]).join(',');
+  sections.push(`Key,Name,Target,Unit,LowerIsBetter,Type,Actual,${monthHeaders}`);
   for (const m of metrics) {
     sections.push([
       m.key,
@@ -41,11 +42,10 @@ export function generateScorecardTemplate(
       m.lowerIsBetter,
       m.type,
       m.actual ?? '',
-      m.jan ?? '',
-      m.feb ?? '',
-      m.mar ?? '',
+      ...MONTH_KEYS.map(k => m[k] ?? ''),
     ].join(','));
   }
+
 
   // WEEKLY section — match default weekly rows
   sections.push('');
