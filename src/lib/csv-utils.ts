@@ -1,5 +1,6 @@
-import type { AgentData, MetricData, WeeklyData, MonthlyCounter, AgentCollectionData, AgentSettlementData } from './data';
-import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS, SAMPLE_AGENT_SETTLEMENTS } from './data';
+import type { AgentData, MetricData, WeeklyData, MonthlyCounter, AgentCollectionData, AgentSettlementData, MonthKey } from './data';
+import { METRICS_CONFIG, WEEKLY_CONFIG, MONTHLY_COUNTER, SAMPLE_AGENT_COLLECTIONS, SAMPLE_AGENT_SETTLEMENTS, MONTH_KEYS, MONTH_LABELS } from './data';
+
 
 // ── CSV Generation ──
 
@@ -28,9 +29,10 @@ export function generateScorecardTemplate(
   const ac = agentCollectionsData && agentCollectionsData.length > 0 ? agentCollectionsData : SAMPLE_AGENT_COLLECTIONS;
   const as_ = agentSettlementsData && agentSettlementsData.length > 0 ? agentSettlementsData : SAMPLE_AGENT_SETTLEMENTS;
 
-  // METRICS section
+  // METRICS section — supports all 12 months
   sections.push('## METRICS');
-  sections.push('Key,Name,Target,Unit,LowerIsBetter,Type,Actual,Jan,Feb,Mar');
+  const monthHeaders = MONTH_KEYS.map(k => MONTH_LABELS[k]).join(',');
+  sections.push(`Key,Name,Target,Unit,LowerIsBetter,Type,Actual,${monthHeaders}`);
   for (const m of metrics) {
     sections.push([
       m.key,
@@ -40,11 +42,10 @@ export function generateScorecardTemplate(
       m.lowerIsBetter,
       m.type,
       m.actual ?? '',
-      m.jan ?? '',
-      m.feb ?? '',
-      m.mar ?? '',
+      ...MONTH_KEYS.map(k => m[k] ?? ''),
     ].join(','));
   }
+
 
   // WEEKLY section — match default weekly rows
   sections.push('');
@@ -162,21 +163,37 @@ export function parseScorecardCsv(text: string): {
     } else if (sectionName.includes('METRIC')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
+      const header = dataLines[0].map(h => h.toLowerCase().trim());
+      const idx = (re: RegExp) => header.findIndex(h => re.test(h));
+      const iKey = idx(/^key$/);
+      const iName = idx(/^name$/);
+      const iTarget = idx(/^target$/);
+      const iUnit = idx(/^unit$/);
+      const iLow = idx(/lower/);
+      const iType = idx(/^type$/);
+      const iActual = idx(/^actual$/);
+      // Map each month key to its column index (header-name based)
+      const monthIdx: Record<MonthKey, number> = {} as any;
+      for (const mk of MONTH_KEYS) {
+        monthIdx[mk] = header.findIndex(h => h === mk || h === MONTH_LABELS[mk].toLowerCase());
+      }
       for (let i = 1; i < dataLines.length; i++) {
         const c = dataLines[i];
+        const num = (i: number) => (i >= 0 && c[i] !== undefined && c[i] !== '') ? Number(c[i]) : null;
+        const months: any = {};
+        for (const mk of MONTH_KEYS) months[mk] = num(monthIdx[mk]);
         metrics.push({
-          key: c[0] || `metric_${i}`,
-          name: c[1] || '',
-          target: Number(c[2]) || 0,
-          unit: c[3] || '%',
-          lowerIsBetter: c[4]?.toLowerCase() === 'true',
-          type: c[5] || 'Monthly',
-          actual: c[6] ? Number(c[6]) : null,
-          jan: c[7] ? Number(c[7]) : null,
-          feb: c[8] ? Number(c[8]) : null,
-          mar: c[9] ? Number(c[9]) : null,
+          key: (iKey >= 0 ? c[iKey] : '') || `metric_${i}`,
+          name: (iName >= 0 ? c[iName] : '') || '',
+          target: Number(iTarget >= 0 ? c[iTarget] : 0) || 0,
+          unit: (iUnit >= 0 ? c[iUnit] : '') || '%',
+          lowerIsBetter: (iLow >= 0 ? c[iLow] : '')?.toLowerCase() === 'true',
+          type: (iType >= 0 ? c[iType] : '') || 'Monthly',
+          actual: num(iActual),
+          ...months,
         });
       }
+
     } else if (sectionName.includes('WEEKLY')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;

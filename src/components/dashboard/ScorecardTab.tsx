@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { getStatus, fmt, fmtK } from '@/lib/data';
+import { getStatus, fmt, fmtK, MONTH_KEYS, MONTH_LABELS } from '@/lib/data';
 import { useDashboard } from '@/lib/dashboard-store';
-import type { AgentCollectionData, AgentSettlementData } from '@/lib/data';
+import type { AgentCollectionData, AgentSettlementData, MonthKey } from '@/lib/data';
+
 
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string; rating: number }> = {
@@ -210,9 +211,10 @@ const ScorecardTab = () => {
         </div>
       </motion.div>
 
-      {/* Quarterly + Monthly */}
-      <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Quarterly Avg Metrics — full width */}
+      <div className="mb-5">
         <motion.div
+
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -220,45 +222,55 @@ const ScorecardTab = () => {
         >
           <div className="flex items-center justify-between bg-primary px-6 py-4">
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
-            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">Q1 2026</span>
+            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">YTD 2026</span>
           </div>
-          <table className="w-full border-collapse table-fixed">
-            <thead>
-              <tr className="border-b-2 border-border bg-secondary">
-                <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
-                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
-                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Jan</th>
-                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Feb</th>
-                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Mar</th>
-                <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q Avg</th>
-                <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {metrics.filter(m => m.jan !== null || m.feb !== null || m.mar !== null).map(m => {
-                const vals = [m.jan, m.feb, m.mar].filter(v => v !== null) as number[];
-                const qAvg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-                const status = getStatus(qAvg, m.target, m.lowerIsBetter);
-                return (
-                  <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                    <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
-                    <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
-                    <td className="px-2 py-3 text-right text-[13px]">{m.jan !== null ? `${m.jan}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                    <td className="px-2 py-3 text-right text-[13px]">{m.feb !== null ? `${m.feb}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                    <td className="px-2 py-3 text-right text-[13px]">{m.mar !== null ? `${m.mar}${m.unit}` : <span className="italic text-border">—</span>}</td>
-                    <td className="px-2 py-3 text-right">
-                      {qAvg !== null
-                        ? <span className="font-display text-[18px] tracking-wider">{qAvg.toFixed(1)}{m.unit}</span>
-                        : <span className="italic text-border">—</span>
-                      }
-                    </td>
-                    <td className="px-2 py-3 text-right">{statusBadge(status)}</td>
+          {(() => {
+            // Only render months that have data in at least one metric
+            const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk => metrics.some(m => m[mk] !== null && m[mk] !== undefined));
+            const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
+            return (
+              <table className="w-full border-collapse table-fixed">
+                <thead>
+                  <tr className="border-b-2 border-border bg-secondary">
+                    <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
+                    {monthsToShow.map(mk => (
+                      <th key={mk} className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                    ))}
+                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Avg</th>
+                    <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {metrics.filter(m => monthsToShow.some(mk => m[mk] !== null && m[mk] !== undefined)).map(m => {
+                    const vals = monthsToShow.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
+                    const avg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+                    const status = getStatus(avg, m.target, m.lowerIsBetter);
+                    return (
+                      <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
+                        <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
+                        <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
+                        {monthsToShow.map(mk => (
+                          <td key={mk} className="px-2 py-3 text-right text-[13px]">
+                            {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
+                          </td>
+                        ))}
+                        <td className="px-2 py-3 text-right">
+                          {avg !== null
+                            ? <span className="font-display text-[18px] tracking-wider">{avg.toFixed(1)}{m.unit}</span>
+                            : <span className="italic text-border">—</span>
+                          }
+                        </td>
+                        <td className="px-2 py-3 text-right">{statusBadge(status)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            );
+          })()}
         </motion.div>
+
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
