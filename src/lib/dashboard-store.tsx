@@ -181,19 +181,20 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       phone: a.phone,
       target: a.target,
       movement: a.movement,
-      avg_days_arrears: a.avgDaysArrears,
-      count: a.count,
-    }));
-    await supabase.from('agents').insert(rows);
-  }, []);
-
-  // Write metrics to Supabase
-  const setMetrics = useCallback(async (newMetrics: MetricData[]) => {
-    setMetricsLocal(newMetrics);
-    await supabase.from('metrics').delete().neq('id', 0);
     const rows = newMetrics.map(m => ({
       key: m.key,
       name: m.name,
+      target: m.target,
+      unit: m.unit,
+      lower_is_better: m.lowerIsBetter,
+      type: m.type,
+      actual: m.actual,
+      jan: m.jan, feb: m.feb, mar: m.mar,
+      apr: m.apr, may: m.may, jun: m.jun,
+      jul: m.jul, aug: m.aug, sep: m.sep,
+      oct: m.oct, nov: m.nov, dec: m.dec,
+    }));
+
       target: m.target,
       unit: m.unit,
       lower_is_better: m.lowerIsBetter,
