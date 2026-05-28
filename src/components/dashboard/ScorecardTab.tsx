@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { getStatus, fmt, fmtK } from '@/lib/data';
+import { getStatus, fmt, fmtK, MONTH_KEYS, MONTH_LABELS } from '@/lib/data';
 import { useDashboard } from '@/lib/dashboard-store';
-import type { AgentCollectionData, AgentSettlementData } from '@/lib/data';
+import type { AgentCollectionData, AgentSettlementData, MonthKey } from '@/lib/data';
+
 
 const statusBadge = (status: string) => {
   const map: Record<string, { bg: string; text: string; label: string; rating: number }> = {
