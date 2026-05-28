@@ -110,13 +110,22 @@ export type Database = {
       metrics: {
         Row: {
           actual: number | null
+          apr: number | null
+          aug: number | null
+          dec: number | null
           feb: number | null
           id: number
           jan: number | null
+          jul: number | null
+          jun: number | null
           key: string
           lower_is_better: boolean
           mar: number | null
+          may: number | null
           name: string
+          nov: number | null
+          oct: number | null
+          sep: number | null
           target: number
           type: string
           unit: string
@@ -124,13 +133,22 @@ export type Database = {
         }
         Insert: {
           actual?: number | null
+          apr?: number | null
+          aug?: number | null
+          dec?: number | null
           feb?: number | null
           id?: number
           jan?: number | null
+          jul?: number | null
+          jun?: number | null
           key: string
           lower_is_better?: boolean
           mar?: number | null
+          may?: number | null
           name: string
+          nov?: number | null
+          oct?: number | null
+          sep?: number | null
           target?: number
           type?: string
           unit?: string
@@ -138,13 +156,22 @@ export type Database = {
         }
         Update: {
           actual?: number | null
+          apr?: number | null
+          aug?: number | null
+          dec?: number | null
           feb?: number | null
           id?: number
           jan?: number | null
+          jul?: number | null
+          jun?: number | null
           key?: string
           lower_is_better?: boolean
           mar?: number | null
+          may?: number | null
           name?: string
+          nov?: number | null
+          oct?: number | null
+          sep?: number | null
           target?: number
           type?: string
           unit?: string
