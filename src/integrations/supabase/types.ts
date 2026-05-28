@@ -17,29 +17,56 @@ export type Database = {
       agent_collections: {
         Row: {
           agent_name: string
+          apr_actual: number | null
+          aug_actual: number | null
           collection_target: number
+          dec_actual: number | null
           feb_actual: number | null
           id: number
           jan_actual: number | null
+          jul_actual: number | null
+          jun_actual: number | null
           mar_actual: number | null
+          may_actual: number | null
+          nov_actual: number | null
+          oct_actual: number | null
+          sep_actual: number | null
           updated_at: string
         }
         Insert: {
           agent_name: string
+          apr_actual?: number | null
+          aug_actual?: number | null
           collection_target?: number
+          dec_actual?: number | null
           feb_actual?: number | null
           id?: never
           jan_actual?: number | null
+          jul_actual?: number | null
+          jun_actual?: number | null
           mar_actual?: number | null
+          may_actual?: number | null
+          nov_actual?: number | null
+          oct_actual?: number | null
+          sep_actual?: number | null
           updated_at?: string
         }
         Update: {
           agent_name?: string
+          apr_actual?: number | null
+          aug_actual?: number | null
           collection_target?: number
+          dec_actual?: number | null
           feb_actual?: number | null
           id?: never
           jan_actual?: number | null
+          jul_actual?: number | null
+          jun_actual?: number | null
           mar_actual?: number | null
+          may_actual?: number | null
+          nov_actual?: number | null
+          oct_actual?: number | null
+          sep_actual?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -47,28 +74,55 @@ export type Database = {
       agent_settlements: {
         Row: {
           agent_name: string
+          apr_actual: number | null
+          aug_actual: number | null
+          dec_actual: number | null
           feb_actual: number | null
           id: number
           jan_actual: number | null
+          jul_actual: number | null
+          jun_actual: number | null
           mar_actual: number | null
+          may_actual: number | null
+          nov_actual: number | null
+          oct_actual: number | null
+          sep_actual: number | null
           settlement_target: number
           updated_at: string
         }
         Insert: {
           agent_name: string
+          apr_actual?: number | null
+          aug_actual?: number | null
+          dec_actual?: number | null
           feb_actual?: number | null
           id?: never
           jan_actual?: number | null
+          jul_actual?: number | null
+          jun_actual?: number | null
           mar_actual?: number | null
+          may_actual?: number | null
+          nov_actual?: number | null
+          oct_actual?: number | null
+          sep_actual?: number | null
           settlement_target?: number
           updated_at?: string
         }
         Update: {
           agent_name?: string
+          apr_actual?: number | null
+          aug_actual?: number | null
+          dec_actual?: number | null
           feb_actual?: number | null
           id?: never
           jan_actual?: number | null
+          jul_actual?: number | null
+          jun_actual?: number | null
           mar_actual?: number | null
+          may_actual?: number | null
+          nov_actual?: number | null
+          oct_actual?: number | null
+          sep_actual?: number | null
           settlement_target?: number
           updated_at?: string
         }
