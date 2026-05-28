@@ -55,13 +55,14 @@ const blankMonths = { apr: null, may: null, jun: null, jul: null, aug: null, sep
 export const METRICS_CONFIG: MetricData[] = [
   { key: 'col_excl', name: 'Collection Efficiency — Exclusive Arrears', target: 98, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 92, jan: 90, feb: 92, mar: null, ...blankMonths },
 
-  { key: 'col_incl', name: 'Collection Efficiency — Inclusive of Arrears', target: 70, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 65, jan: 62, feb: 65, mar: null },
-  { key: 'npl', name: 'NPL Ratio', target: 4, unit: '%', lowerIsBetter: true, type: 'Monthly', actual: 4.8, jan: 5.1, feb: 4.8, mar: null },
-  { key: 'fid', name: 'FID Collections', target: 90, unit: '%', lowerIsBetter: false, type: 'Quarterly', actual: 85, jan: 82, feb: 85, mar: null },
-  { key: 'par30', name: 'Portfolio at Risk (PAR >30)', target: 5.5, unit: '%', lowerIsBetter: true, type: 'Monthly', actual: 6.2, jan: 6.8, feb: 6.2, mar: null },
-  { key: 'days_arr', name: 'Avg Days in Arrears', target: 90, unit: 'Days', lowerIsBetter: true, type: 'Monthly', actual: 78, jan: 85, feb: 78, mar: null },
-  { key: 'days_del', name: 'Avg Days Delinquent (PAR >90)', target: 365, unit: 'Days', lowerIsBetter: true, type: 'Monthly', actual: 310, jan: 340, feb: 310, mar: null },
-  { key: 'ddacc', name: 'DDACC Collection Rate', target: 70, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 58, jan: 52, feb: 58, mar: null },
+  { key: 'col_incl', name: 'Collection Efficiency — Inclusive of Arrears', target: 70, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 65, jan: 62, feb: 65, mar: null, ...blankMonths },
+  { key: 'npl', name: 'NPL Ratio', target: 4, unit: '%', lowerIsBetter: true, type: 'Monthly', actual: 4.8, jan: 5.1, feb: 4.8, mar: null, ...blankMonths },
+  { key: 'fid', name: 'FID Collections', target: 90, unit: '%', lowerIsBetter: false, type: 'Quarterly', actual: 85, jan: 82, feb: 85, mar: null, ...blankMonths },
+  { key: 'par30', name: 'Portfolio at Risk (PAR >30)', target: 5.5, unit: '%', lowerIsBetter: true, type: 'Monthly', actual: 6.2, jan: 6.8, feb: 6.2, mar: null, ...blankMonths },
+  { key: 'days_arr', name: 'Avg Days in Arrears', target: 90, unit: 'Days', lowerIsBetter: true, type: 'Monthly', actual: 78, jan: 85, feb: 78, mar: null, ...blankMonths },
+  { key: 'days_del', name: 'Avg Days Delinquent (PAR >90)', target: 365, unit: 'Days', lowerIsBetter: true, type: 'Monthly', actual: 310, jan: 340, feb: 310, mar: null, ...blankMonths },
+  { key: 'ddacc', name: 'DDACC Collection Rate', target: 70, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 58, jan: 52, feb: 58, mar: null, ...blankMonths },
+
 ];
 
 export interface WeeklyData {
