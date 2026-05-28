@@ -92,23 +92,6 @@ export const MONTHLY_COUNTER: MonthlyCounter[] = [
   { month: 'Mar 2026', target: 60000, actual: null },
 ];
 
-export interface AgentCollectionData {
-  agentName: string;
-  collectionTarget: number;
-  janActual: number | null;
-  febActual: number | null;
-  marActual: number | null;
-}
-
-export const SAMPLE_AGENT_COLLECTIONS: AgentCollectionData[] = [
-  { agentName: 'Tambudzai Madiri', collectionTarget: 150000, janActual: 145000, febActual: 148000, marActual: 152000 },
-  { agentName: 'Mulenga Kasonde', collectionTarget: 125000, janActual: 122000, febActual: 125000, marActual: 128000 },
-  { agentName: 'Agent Three', collectionTarget: 140000, janActual: 135000, febActual: 138000, marActual: 142000 },
-  { agentName: 'Agent Four', collectionTarget: 130000, janActual: 128000, febActual: 131000, marActual: 134000 },
-  { agentName: 'Agent Five', collectionTarget: 145000, janActual: 140000, febActual: 143000, marActual: 147000 },
-];
-
-export interface AgentSettlementData {
 export type MonthlyActuals = Partial<Record<`${MonthKey}Actual`, number | null>>;
 
 export interface AgentCollectionData extends MonthlyActuals {
@@ -143,14 +126,25 @@ export const SAMPLE_AGENT_SETTLEMENTS: AgentSettlementData[] = [
   { agentName: 'Agent Five', settlementTarget: 50000, janActual: null, febActual: null, marActual: null },
 ];
 
-    return 'poor';                                 // 5 - far over target
+// Utility functions
+export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
+export const fmtK = (n: number) => 'K' + Number(n).toLocaleString('en-ZM');
+
+export function getStatus(actual: number | null, target: number, lowerIsBetter: boolean): string {
+  if (actual === null || actual === undefined || isNaN(actual)) return 'pending';
+  const pct = actual / target;
+  if (lowerIsBetter) {
+    if (pct <= 0.85) return 'outstanding';
+    if (pct <= 1.0) return 'exceed';
+    if (pct <= 1.15) return 'meet';
+    if (pct <= 1.30) return 'unsatisfactory';
+    return 'poor';
   } else {
-    // Higher actual = better. pct > 1 means beating target
-    if (pct >= 1.10) return 'outstanding';        // 1 - well above target
-    if (pct >= 1.0) return 'exceed';              // 2 - met or exceeded
-    if (pct >= 0.85) return 'meet';               // 3 - close to target
-    if (pct >= 0.70) return 'unsatisfactory';     // 4 - notably below
-    return 'poor';                                 // 5 - far below target
+    if (pct >= 1.10) return 'outstanding';
+    if (pct >= 1.0) return 'exceed';
+    if (pct >= 0.85) return 'meet';
+    if (pct >= 0.70) return 'unsatisfactory';
+    return 'poor';
   }
 }
 
@@ -167,3 +161,4 @@ export function processAgents(data: AgentData[]) {
   const maxM = rows[0]?.movement || 1;
   return { rows, totT, totM, totV, rate, maxM };
 }
+
