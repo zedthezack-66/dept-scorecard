@@ -57,8 +57,18 @@ function dbMetricToApp(r: any): MetricData {
     jan: r.jan !== null ? Number(r.jan) : null,
     feb: r.feb !== null ? Number(r.feb) : null,
     mar: r.mar !== null ? Number(r.mar) : null,
+    apr: r.apr !== null && r.apr !== undefined ? Number(r.apr) : null,
+    may: r.may !== null && r.may !== undefined ? Number(r.may) : null,
+    jun: r.jun !== null && r.jun !== undefined ? Number(r.jun) : null,
+    jul: r.jul !== null && r.jul !== undefined ? Number(r.jul) : null,
+    aug: r.aug !== null && r.aug !== undefined ? Number(r.aug) : null,
+    sep: r.sep !== null && r.sep !== undefined ? Number(r.sep) : null,
+    oct: r.oct !== null && r.oct !== undefined ? Number(r.oct) : null,
+    nov: r.nov !== null && r.nov !== undefined ? Number(r.nov) : null,
+    dec: r.dec !== null && r.dec !== undefined ? Number(r.dec) : null,
   };
 }
+
 
 function dbWeeklyToApp(r: any): WeeklyData {
   return {
