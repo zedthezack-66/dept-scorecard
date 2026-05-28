@@ -21,8 +21,6 @@ export const SAMPLE_AGENTS: AgentData[] = [
   { name: 'Agent 8', phone: '076-XXX-XXX', target: 60000, movement: 1160, avgDaysArrears: 120, count: 45 },
 ];
 
-export interface MetricData {
-  key: string;
 export const MONTH_KEYS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'] as const;
 export type MonthKey = typeof MONTH_KEYS[number];
 export const MONTH_LABELS: Record<MonthKey, string> = {
@@ -52,7 +50,11 @@ export interface MetricData {
   dec: number | null;
 }
 
-  { key: 'col_excl', name: 'Collection Efficiency — Exclusive Arrears', target: 98, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 92, jan: 90, feb: 92, mar: null },
+const blankMonths = { apr: null, may: null, jun: null, jul: null, aug: null, sep: null, oct: null, nov: null, dec: null };
+
+export const METRICS_CONFIG: MetricData[] = [
+  { key: 'col_excl', name: 'Collection Efficiency — Exclusive Arrears', target: 98, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 92, jan: 90, feb: 92, mar: null, ...blankMonths },
+
   { key: 'col_incl', name: 'Collection Efficiency — Inclusive of Arrears', target: 70, unit: '%', lowerIsBetter: false, type: 'Monthly', actual: 65, jan: 62, feb: 65, mar: null },
   { key: 'npl', name: 'NPL Ratio', target: 4, unit: '%', lowerIsBetter: true, type: 'Monthly', actual: 4.8, jan: 5.1, feb: 4.8, mar: null },
   { key: 'fid', name: 'FID Collections', target: 90, unit: '%', lowerIsBetter: false, type: 'Quarterly', actual: 85, jan: 82, feb: 85, mar: null },
