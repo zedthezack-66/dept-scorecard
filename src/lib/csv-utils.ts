@@ -60,23 +60,23 @@ export function generateScorecardTemplate(
   sections.push('## MONTHLY');
   sections.push('Month,Target,Actual');
   for (const m of monthly) {
-    sections.push([m.month, m.target, m.actual ?? ''].join(','));
-  }
-
-  // AGENT COLLECTIONS section
+  // AGENT COLLECTIONS section — supports all 12 months
   sections.push('');
   sections.push('## AGENT_COLLECTIONS');
-  sections.push('AgentName,CollectionTarget,JanActual,FebActual,MarActual');
+  const agentMonthHeaders = MONTH_KEYS.map(k => `${MONTH_LABELS[k]}Actual`).join(',');
+  sections.push(`AgentName,CollectionTarget,${agentMonthHeaders}`);
   for (const a of ac) {
-    sections.push([a.agentName, a.collectionTarget, a.janActual ?? '', a.febActual ?? '', a.marActual ?? ''].join(','));
+    sections.push([a.agentName, a.collectionTarget, ...MONTH_KEYS.map(k => (a as any)[`${k}Actual`] ?? '')].join(','));
   }
 
-  // AGENT SETTLEMENTS section
+  // AGENT SETTLEMENTS section — supports all 12 months
   sections.push('');
   sections.push('## AGENT_SETTLEMENTS');
-  sections.push('AgentName,SettlementTarget,JanActual,FebActual,MarActual');
+  sections.push(`AgentName,SettlementTarget,${agentMonthHeaders}`);
   for (const a of as_) {
-    sections.push([a.agentName, a.settlementTarget, a.janActual ?? '', a.febActual ?? '', a.marActual ?? ''].join(','));
+    sections.push([a.agentName, a.settlementTarget, ...MONTH_KEYS.map(k => (a as any)[`${k}Actual`] ?? '')].join(','));
+  }
+
   }
 
   return sections.join('\n');
@@ -125,30 +125,48 @@ export function parseScorecardCsv(text: string): {
 } {
   const sections = text.split(/^##\s*/m).filter(Boolean);
   const metrics: MetricData[] = [];
-  const weekly: WeeklyData[] = [];
-  const monthly: MonthlyCounter[] = [];
-  const agentCollections: AgentCollectionData[] = [];
-  const agentSettlements: AgentSettlementData[] = [];
-
-  for (const section of sections) {
-    const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
-    const sectionName = lines[0].toUpperCase();
-
     if (sectionName.includes('AGENT_SETTLEMENT')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
+      const header = dataLines[0].map(h => h.toLowerCase().trim());
+      const monthIdx: Record<MonthKey, number> = {} as any;
+      for (const mk of MONTH_KEYS) {
+        monthIdx[mk] = header.findIndex(h => h === `${mk}actual` || h === `${MONTH_LABELS[mk].toLowerCase()}actual` || h === mk || h === MONTH_LABELS[mk].toLowerCase());
+      }
       for (let i = 1; i < dataLines.length; i++) {
         const c = dataLines[i];
-        agentSettlements.push({
+        const row: any = {
           agentName: c[0] || `Agent ${i}`,
           settlementTarget: Number(c[1]) || 50000,
-          janActual: c[2] ? Number(c[2]) : null,
-          febActual: c[3] ? Number(c[3]) : null,
-          marActual: c[4] ? Number(c[4]) : null,
-        });
+        };
+        for (const mk of MONTH_KEYS) {
+          const idx = monthIdx[mk];
+          row[`${mk}Actual`] = (idx >= 0 && c[idx] !== undefined && c[idx] !== '') ? Number(c[idx]) : null;
+        }
+        agentSettlements.push(row);
       }
     } else if (sectionName.includes('AGENT_COLLECTION')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
+      if (dataLines.length < 2) continue;
+      const header = dataLines[0].map(h => h.toLowerCase().trim());
+      const monthIdx: Record<MonthKey, number> = {} as any;
+      for (const mk of MONTH_KEYS) {
+        monthIdx[mk] = header.findIndex(h => h === `${mk}actual` || h === `${MONTH_LABELS[mk].toLowerCase()}actual` || h === mk || h === MONTH_LABELS[mk].toLowerCase());
+      }
+      for (let i = 1; i < dataLines.length; i++) {
+        const c = dataLines[i];
+        const row: any = {
+          agentName: c[0] || `Agent ${i}`,
+          collectionTarget: Number(c[1]) || 0,
+        };
+        for (const mk of MONTH_KEYS) {
+          const idx = monthIdx[mk];
+          row[`${mk}Actual`] = (idx >= 0 && c[idx] !== undefined && c[idx] !== '') ? Number(c[idx]) : null;
+        }
+        agentCollections.push(row);
+      }
+    } else if (sectionName.includes('METRIC')) {
+
       if (dataLines.length < 2) continue;
       for (let i = 1; i < dataLines.length; i++) {
         const c = dataLines[i];

@@ -88,25 +88,32 @@ function dbMonthlyToApp(r: any): MonthlyCounter {
   };
 }
 
+import { MONTH_KEYS } from './data';
+
 function dbAgentCollectionToApp(r: any): AgentCollectionData {
-  return {
+  const out: any = {
     agentName: r.agent_name,
     collectionTarget: Number(r.collection_target),
-    janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
-    febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
-    marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
   };
+  for (const mk of MONTH_KEYS) {
+    const v = r[`${mk}_actual`];
+    out[`${mk}Actual`] = v !== null && v !== undefined ? Number(v) : null;
+  }
+  return out;
 }
 
 function dbAgentSettlementToApp(r: any): AgentSettlementData {
-  return {
+  const out: any = {
     agentName: r.agent_name,
     settlementTarget: Number(r.settlement_target),
-    janActual: r.jan_actual !== null ? Number(r.jan_actual) : null,
-    febActual: r.feb_actual !== null ? Number(r.feb_actual) : null,
-    marActual: r.mar_actual !== null ? Number(r.mar_actual) : null,
   };
+  for (const mk of MONTH_KEYS) {
+    const v = r[`${mk}_actual`];
+    out[`${mk}Actual`] = v !== null && v !== undefined ? Number(v) : null;
+  }
+  return out;
 }
+
 
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [agents, setAgentsLocal] = useState<AgentData[]>(SAMPLE_AGENTS);
@@ -238,13 +245,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const setAgentCollections = useCallback(async (newData: AgentCollectionData[]) => {
     setAgentCollectionsLocal(newData);
     await supabase.from('agent_collections').delete().neq('id', 0);
-    const rows = newData.map(a => ({
-      agent_name: a.agentName,
-      collection_target: a.collectionTarget,
-      jan_actual: a.janActual,
-      feb_actual: a.febActual,
-      mar_actual: a.marActual,
-    }));
+    const rows = newData.map(a => {
+      const row: any = {
+        agent_name: a.agentName,
+        collection_target: a.collectionTarget,
+      };
+      for (const mk of MONTH_KEYS) row[`${mk}_actual`] = (a as any)[`${mk}Actual`] ?? null;
+      return row;
+    });
     await supabase.from('agent_collections').insert(rows);
   }, []);
 
@@ -252,15 +260,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const setAgentSettlements = useCallback(async (newData: AgentSettlementData[]) => {
     setAgentSettlementsLocal(newData);
     await supabase.from('agent_settlements').delete().neq('id', 0);
-    const rows = newData.map(a => ({
-      agent_name: a.agentName,
-      settlement_target: a.settlementTarget,
-      jan_actual: a.janActual,
-      feb_actual: a.febActual,
-      mar_actual: a.marActual,
-    }));
+    const rows = newData.map(a => {
+      const row: any = {
+        agent_name: a.agentName,
+        settlement_target: a.settlementTarget,
+      };
+      for (const mk of MONTH_KEYS) row[`${mk}_actual`] = (a as any)[`${mk}Actual`] ?? null;
+      return row;
+    });
     await supabase.from('agent_settlements').insert(rows);
   }, []);
+
 
   // Target update helpers - update in Supabase via re-fetching IDs
   const updateAgentTarget = useCallback((index: number, target: number) => {
