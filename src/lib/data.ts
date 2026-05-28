@@ -92,7 +92,9 @@ export const MONTHLY_COUNTER: MonthlyCounter[] = [
   { month: 'Mar 2026', target: 60000, actual: null },
 ];
 
-export interface AgentCollectionData {
+export type MonthlyActuals = Partial<Record<`${MonthKey}Actual`, number | null>>;
+
+export interface AgentCollectionData extends MonthlyActuals {
   agentName: string;
   collectionTarget: number;
   janActual: number | null;
@@ -108,7 +110,7 @@ export const SAMPLE_AGENT_COLLECTIONS: AgentCollectionData[] = [
   { agentName: 'Agent Five', collectionTarget: 145000, janActual: 140000, febActual: 143000, marActual: 147000 },
 ];
 
-export interface AgentSettlementData {
+export interface AgentSettlementData extends MonthlyActuals {
   agentName: string;
   settlementTarget: number;
   janActual: number | null;
@@ -126,27 +128,23 @@ export const SAMPLE_AGENT_SETTLEMENTS: AgentSettlementData[] = [
 
 // Utility functions
 export const fmt = (n: number) => Number(n).toLocaleString('en-ZM');
-export const fmtK = (n: number) => {
-  return 'K' + Number(n).toLocaleString('en-ZM');
-};
+export const fmtK = (n: number) => 'K' + Number(n).toLocaleString('en-ZM');
 
 export function getStatus(actual: number | null, target: number, lowerIsBetter: boolean): string {
   if (actual === null || actual === undefined || isNaN(actual)) return 'pending';
   const pct = actual / target;
   if (lowerIsBetter) {
-    // Lower actual = better. pct < 1 means beating target
-    if (pct <= 0.85) return 'outstanding';       // 1 - well below target
-    if (pct <= 1.0) return 'exceed';              // 2 - at or under target
-    if (pct <= 1.15) return 'meet';               // 3 - slightly over
-    if (pct <= 1.30) return 'unsatisfactory';     // 4 - notably over
-    return 'poor';                                 // 5 - far over target
+    if (pct <= 0.85) return 'outstanding';
+    if (pct <= 1.0) return 'exceed';
+    if (pct <= 1.15) return 'meet';
+    if (pct <= 1.30) return 'unsatisfactory';
+    return 'poor';
   } else {
-    // Higher actual = better. pct > 1 means beating target
-    if (pct >= 1.10) return 'outstanding';        // 1 - well above target
-    if (pct >= 1.0) return 'exceed';              // 2 - met or exceeded
-    if (pct >= 0.85) return 'meet';               // 3 - close to target
-    if (pct >= 0.70) return 'unsatisfactory';     // 4 - notably below
-    return 'poor';                                 // 5 - far below target
+    if (pct >= 1.10) return 'outstanding';
+    if (pct >= 1.0) return 'exceed';
+    if (pct >= 0.85) return 'meet';
+    if (pct >= 0.70) return 'unsatisfactory';
+    return 'poor';
   }
 }
 
@@ -163,3 +161,4 @@ export function processAgents(data: AgentData[]) {
   const maxM = rows[0]?.movement || 1;
   return { rows, totT, totM, totV, rate, maxM };
 }
+

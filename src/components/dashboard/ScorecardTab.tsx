@@ -319,7 +319,13 @@ const ScorecardTab = () => {
       </div>
 
       {/* Agent Collection Breakdown */}
-      {agentCollections.length > 0 && (
+      {agentCollections.length > 0 && (() => {
+        const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk =>
+          agentCollections.some(a => (a as any)[`${mk}Actual`] !== null && (a as any)[`${mk}Actual`] !== undefined)
+        );
+        const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
+        const monthsCount = monthsToShow.length || 1;
+        return (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -338,9 +344,9 @@ const ScorecardTab = () => {
                 <tr className="border-b-2 border-border bg-secondary">
                   <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Agent Name</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Collection Target</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Jan Actual</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Feb Actual</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar Actual</th>
+                  {monthsToShow.map(mk => (
+                    <th key={mk} className="px-3 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                  ))}
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Expected</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Actual</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Variance</th>
@@ -349,19 +355,10 @@ const ScorecardTab = () => {
               </thead>
               <tbody>
                 {(() => {
-                  // Count months with data to compute YTD expected
-                  const monthsWithData = agentCollections.reduce((max, a) => {
-                    let count = 0;
-                    if (a.janActual !== null) count++;
-                    if (a.febActual !== null) count++;
-                    if (a.marActual !== null) count++;
-                    return Math.max(max, count);
-                  }, 0) || 1;
-
                   const rows = agentCollections.map((a, i) => {
-                    const actuals = [a.janActual, a.febActual, a.marActual].filter(v => v !== null) as number[];
+                    const actuals = monthsToShow.map(mk => (a as any)[`${mk}Actual`]).filter(v => v !== null && v !== undefined) as number[];
                     const ytdActual = actuals.reduce((s, v) => s + v, 0);
-                    const ytdExpected = a.collectionTarget * monthsWithData;
+                    const ytdExpected = a.collectionTarget * monthsCount;
                     const monthlyAvg = actuals.length > 0 ? Math.round(ytdActual / actuals.length) : 0;
                     const ytdVariance = ytdActual - ytdExpected;
                     const rate = ytdExpected > 0 ? Math.round((ytdActual / ytdExpected) * 100) : 0;
@@ -371,9 +368,14 @@ const ScorecardTab = () => {
                       <tr key={i} className="border-b border-border hover:bg-primary/[0.03]">
                         <td className="px-5 py-3.5 text-[14px] font-semibold text-foreground">{a.agentName}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(a.collectionTarget)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.janActual !== null ? `K ${fmt(a.janActual)}` : <span className="italic text-border">—</span>}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.febActual !== null ? `K ${fmt(a.febActual)}` : <span className="italic text-border">—</span>}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.marActual !== null ? `K ${fmt(a.marActual)}` : <span className="italic text-border">—</span>}</td>
+                        {monthsToShow.map(mk => {
+                          const v = (a as any)[`${mk}Actual`];
+                          return (
+                            <td key={mk} className="px-3 py-3.5 text-right text-[14px]">
+                              {v !== null && v !== undefined ? `K ${fmt(v)}` : <span className="italic text-border">—</span>}
+                            </td>
+                          );
+                        })}
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(ytdExpected)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${rateColor}`}>K {fmt(ytdActual)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${ytdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{ytdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(ytdVariance))}</td>
@@ -382,15 +384,14 @@ const ScorecardTab = () => {
                     );
                   });
 
-                  // Totals row
                   const totTarget = agentCollections.reduce((s, a) => s + a.collectionTarget, 0);
-                  const totJan = agentCollections.reduce((s, a) => s + (a.janActual ?? 0), 0);
-                  const totFeb = agentCollections.reduce((s, a) => s + (a.febActual ?? 0), 0);
-                  const totMar = agentCollections.reduce((s, a) => s + (a.marActual ?? 0), 0);
-                  const totYtdExpected = totTarget * monthsWithData;
-                  const totYtdActual = totJan + totFeb + totMar;
+                  const monthTotals = monthsToShow.map(mk =>
+                    agentCollections.reduce((s, a) => s + (((a as any)[`${mk}Actual`]) ?? 0), 0)
+                  );
+                  const totYtdExpected = totTarget * monthsCount;
+                  const totYtdActual = monthTotals.reduce((s, v) => s + v, 0);
                   const totYtdVariance = totYtdActual - totYtdExpected;
-                  const totMonthlyAvg = monthsWithData > 0 ? Math.round(totYtdActual / monthsWithData) : 0;
+                  const totMonthlyAvg = monthsCount > 0 ? Math.round(totYtdActual / monthsCount) : 0;
 
                   return (
                     <>
@@ -398,9 +399,9 @@ const ScorecardTab = () => {
                       <tr className="border-t-2 border-border bg-secondary font-bold">
                         <td className="px-5 py-3.5 text-[14px] font-bold text-foreground">TOTAL</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totTarget)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totJan)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totFeb)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMar)}</td>
+                        {monthTotals.map((v, idx) => (
+                          <td key={idx} className="px-3 py-3.5 text-right text-[14px]">K {fmt(v)}</td>
+                        ))}
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totYtdExpected)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px] font-bold">K {fmt(totYtdActual)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-bold ${totYtdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{totYtdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(totYtdVariance))}</td>
@@ -413,10 +414,16 @@ const ScorecardTab = () => {
             </table>
           </div>
         </motion.div>
-      )}
+      );})()}
 
       {/* Agent Settlement Breakdown */}
-      {agentSettlements.length > 0 && (
+      {agentSettlements.length > 0 && (() => {
+        const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk =>
+          agentSettlements.some(a => (a as any)[`${mk}Actual`] !== null && (a as any)[`${mk}Actual`] !== undefined)
+        );
+        const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
+        const monthsCount = monthsToShow.length || 1;
+        return (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -435,9 +442,9 @@ const ScorecardTab = () => {
                 <tr className="border-b-2 border-border bg-secondary">
                   <th className="px-5 py-3 text-left text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Agent Name</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Settlement Target</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Jan Actual</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Feb Actual</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">Mar Actual</th>
+                  {monthsToShow.map(mk => (
+                    <th key={mk} className="px-3 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                  ))}
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Expected</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Actual</th>
                   <th className="px-5 py-3 text-right text-[11px] font-bold tracking-[2px] uppercase text-muted-foreground">YTD Variance</th>
@@ -446,18 +453,10 @@ const ScorecardTab = () => {
               </thead>
               <tbody>
                 {(() => {
-                  const monthsWithData = agentSettlements.reduce((max, a) => {
-                    let count = 0;
-                    if (a.janActual !== null) count++;
-                    if (a.febActual !== null) count++;
-                    if (a.marActual !== null) count++;
-                    return Math.max(max, count);
-                  }, 0) || 1;
-
                   const rows = agentSettlements.map((a, i) => {
-                    const actuals = [a.janActual, a.febActual, a.marActual].filter(v => v !== null) as number[];
+                    const actuals = monthsToShow.map(mk => (a as any)[`${mk}Actual`]).filter(v => v !== null && v !== undefined) as number[];
                     const ytdActual = actuals.reduce((s, v) => s + v, 0);
-                    const ytdExpected = a.settlementTarget * monthsWithData;
+                    const ytdExpected = a.settlementTarget * monthsCount;
                     const monthlyAvg = actuals.length > 0 ? Math.round(ytdActual / actuals.length) : 0;
                     const ytdVariance = ytdActual - ytdExpected;
                     const rate = ytdExpected > 0 ? Math.round((ytdActual / ytdExpected) * 100) : 0;
@@ -467,9 +466,14 @@ const ScorecardTab = () => {
                       <tr key={i} className="border-b border-border hover:bg-primary/[0.03]">
                         <td className="px-5 py-3.5 text-[14px] font-semibold text-foreground">{a.agentName}</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(a.settlementTarget)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.janActual !== null ? `K ${fmt(a.janActual)}` : <span className="italic text-border">—</span>}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.febActual !== null ? `K ${fmt(a.febActual)}` : <span className="italic text-border">—</span>}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">{a.marActual !== null ? `K ${fmt(a.marActual)}` : <span className="italic text-border">—</span>}</td>
+                        {monthsToShow.map(mk => {
+                          const v = (a as any)[`${mk}Actual`];
+                          return (
+                            <td key={mk} className="px-3 py-3.5 text-right text-[14px]">
+                              {v !== null && v !== undefined ? `K ${fmt(v)}` : <span className="italic text-border">—</span>}
+                            </td>
+                          );
+                        })}
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(ytdExpected)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${rateColor}`}>K {fmt(ytdActual)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-semibold ${ytdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{ytdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(ytdVariance))}</td>
@@ -479,13 +483,13 @@ const ScorecardTab = () => {
                   });
 
                   const totTarget = agentSettlements.reduce((s, a) => s + a.settlementTarget, 0);
-                  const totJan = agentSettlements.reduce((s, a) => s + (a.janActual ?? 0), 0);
-                  const totFeb = agentSettlements.reduce((s, a) => s + (a.febActual ?? 0), 0);
-                  const totMar = agentSettlements.reduce((s, a) => s + (a.marActual ?? 0), 0);
-                  const totYtdExpected = totTarget * monthsWithData;
-                  const totYtdActual = totJan + totFeb + totMar;
+                  const monthTotals = monthsToShow.map(mk =>
+                    agentSettlements.reduce((s, a) => s + (((a as any)[`${mk}Actual`]) ?? 0), 0)
+                  );
+                  const totYtdExpected = totTarget * monthsCount;
+                  const totYtdActual = monthTotals.reduce((s, v) => s + v, 0);
                   const totYtdVariance = totYtdActual - totYtdExpected;
-                  const totMonthlyAvg = monthsWithData > 0 ? Math.round(totYtdActual / monthsWithData) : 0;
+                  const totMonthlyAvg = monthsCount > 0 ? Math.round(totYtdActual / monthsCount) : 0;
 
                   return (
                     <>
@@ -493,9 +497,9 @@ const ScorecardTab = () => {
                       <tr className="border-t-2 border-border bg-secondary font-bold">
                         <td className="px-5 py-3.5 text-[14px] font-bold text-foreground">TOTAL</td>
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totTarget)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totJan)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totFeb)}</td>
-                        <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totMar)}</td>
+                        {monthTotals.map((v, idx) => (
+                          <td key={idx} className="px-3 py-3.5 text-right text-[14px]">K {fmt(v)}</td>
+                        ))}
                         <td className="px-5 py-3.5 text-right text-[14px]">K {fmt(totYtdExpected)}</td>
                         <td className="px-5 py-3.5 text-right text-[14px] font-bold">K {fmt(totYtdActual)}</td>
                         <td className={`px-5 py-3.5 text-right text-[14px] font-bold ${totYtdVariance >= 0 ? 'text-emerald' : 'text-red'}`}>{totYtdVariance >= 0 ? '+' : ''}K {fmt(Math.abs(totYtdVariance))}</td>
@@ -508,7 +512,8 @@ const ScorecardTab = () => {
             </table>
           </div>
         </motion.div>
-      )}
+      );})()}
+
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-[12px] tracking-wider text-muted-foreground">
         <span>Credit Department · Scorecard Tracker Q1 2026</span>
