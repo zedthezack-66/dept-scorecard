@@ -125,7 +125,17 @@ export function parseScorecardCsv(text: string): {
 } {
   const sections = text.split(/^##\s*/m).filter(Boolean);
   const metrics: MetricData[] = [];
+  const weekly: WeeklyData[] = [];
+  const monthly: MonthlyCounter[] = [];
+  const agentCollections: AgentCollectionData[] = [];
+  const agentSettlements: AgentSettlementData[] = [];
+
+  for (const section of sections) {
+    const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
+    const sectionName = lines[0].toUpperCase();
+
     if (sectionName.includes('AGENT_SETTLEMENT')) {
+
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
       const header = dataLines[0].map(h => h.toLowerCase().trim());
