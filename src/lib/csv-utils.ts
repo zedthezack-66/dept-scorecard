@@ -167,18 +167,6 @@ export function parseScorecardCsv(text: string): {
       }
     } else if (sectionName.includes('METRIC')) {
 
-      if (dataLines.length < 2) continue;
-      for (let i = 1; i < dataLines.length; i++) {
-        const c = dataLines[i];
-        agentCollections.push({
-          agentName: c[0] || `Agent ${i}`,
-          collectionTarget: Number(c[1]) || 0,
-          janActual: c[2] ? Number(c[2]) : null,
-          febActual: c[3] ? Number(c[3]) : null,
-          marActual: c[4] ? Number(c[4]) : null,
-        });
-      }
-    } else if (sectionName.includes('METRIC')) {
       const dataLines = parseCsvLines(lines.slice(1).join('\n'));
       if (dataLines.length < 2) continue;
       const header = dataLines[0].map(h => h.toLowerCase().trim());
