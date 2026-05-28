@@ -211,8 +211,10 @@ const ScorecardTab = () => {
         </div>
       </motion.div>
 
-      {/* Quarterly + Monthly */}
+      {/* Quarterly Avg Metrics — full width */}
+      <div className="mb-5">
         <motion.div
+
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
