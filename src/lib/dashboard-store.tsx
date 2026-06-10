@@ -5,6 +5,9 @@ import {
   type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData, type AgentSettlementData,
 } from './data';
 
+const MONTHLY_TARGET_KEY = 'collections_monthly_target';
+const DEFAULT_MONTHLY_TARGET = 580000;
+
 interface DashboardState {
   agents: AgentData[];
   metrics: MetricData[];
@@ -12,6 +15,7 @@ interface DashboardState {
   monthly: MonthlyCounter[];
   agentCollections: AgentCollectionData[];
   agentSettlements: AgentSettlementData[];
+  monthlyTarget: number;
   loading: boolean;
   setAgents: (agents: AgentData[]) => Promise<void>;
   setMetrics: (metrics: MetricData[]) => Promise<void>;
@@ -19,6 +23,7 @@ interface DashboardState {
   setMonthly: (monthly: MonthlyCounter[]) => Promise<void>;
   setAgentCollections: (data: AgentCollectionData[]) => Promise<void>;
   setAgentSettlements: (data: AgentSettlementData[]) => Promise<void>;
+  setMonthlyTarget: (target: number) => void;
   updateAgentTarget: (index: number, target: number) => void;
   updateMetricTarget: (key: string, target: number) => void;
   updateWeeklyTarget: (index: number, target: number) => void;
@@ -122,7 +127,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [monthly, setMonthlyLocal] = useState<MonthlyCounter[]>(MONTHLY_COUNTER);
   const [agentCollections, setAgentCollectionsLocal] = useState<AgentCollectionData[]>(SAMPLE_AGENT_COLLECTIONS);
   const [agentSettlements, setAgentSettlementsLocal] = useState<AgentSettlementData[]>(SAMPLE_AGENT_SETTLEMENTS);
+  const [monthlyTarget, setMonthlyTargetState] = useState<number>(() => {
+    if (typeof window === 'undefined') return DEFAULT_MONTHLY_TARGET;
+    const v = Number(localStorage.getItem(MONTHLY_TARGET_KEY));
+    return Number.isFinite(v) && v > 0 ? v : DEFAULT_MONTHLY_TARGET;
+  });
+  const setMonthlyTarget = useCallback((t: number) => {
+    setMonthlyTargetState(t);
+    try { localStorage.setItem(MONTHLY_TARGET_KEY, String(t)); } catch {}
+  }, []);
   const [loading, setLoading] = useState(true);
+
 
   // Initial fetch
   useEffect(() => {
@@ -325,8 +340,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <DashboardContext.Provider value={{
-      agents, metrics, weekly, monthly, agentCollections, agentSettlements, loading,
-      setAgents, setMetrics, setWeekly, setMonthly, setAgentCollections, setAgentSettlements,
+      agents, metrics, weekly, monthly, agentCollections, agentSettlements, monthlyTarget, loading,
+      setAgents, setMetrics, setWeekly, setMonthly, setAgentCollections, setAgentSettlements, setMonthlyTarget,
       updateAgentTarget, updateMetricTarget, updateWeeklyTarget, updateMonthlyTarget,
     }}>
       {children}

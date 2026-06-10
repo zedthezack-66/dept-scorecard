@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Pencil } from 'lucide-react';
 import { fmtK } from '@/lib/data';
 
 interface KPIItem {
@@ -7,6 +8,7 @@ interface KPIItem {
   note: string;
   barPct: number;
   color: 'navy' | 'emerald' | 'amber' | 'gold';
+  onEdit?: () => void;
 }
 
 const colorMap = {
@@ -29,8 +31,20 @@ const KPIStrip = ({ items }: { items: KPIItem[] }) => (
           className="relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-card"
         >
           <div className={`absolute top-0 left-0 right-0 h-[4px] ${c.bar}`} />
-          <div className="mb-2 text-[13px] font-bold tracking-[3px] uppercase text-muted-foreground">
-            {item.label}
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="text-[13px] font-bold tracking-[3px] uppercase text-muted-foreground">
+              {item.label}
+            </div>
+            {item.onEdit && (
+              <button
+                onClick={item.onEdit}
+                className="rounded p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                aria-label={`Edit ${item.label}`}
+                title="Edit"
+              >
+                <Pencil size={14} />
+              </button>
+            )}
           </div>
           <div className={`font-display text-[clamp(32px,4vw,48px)] leading-none tracking-wider ${c.text}`}>
             {item.value}
@@ -49,6 +63,7 @@ const KPIStrip = ({ items }: { items: KPIItem[] }) => (
     })}
   </div>
 );
+
 
 export default KPIStrip;
 export type { KPIItem };
