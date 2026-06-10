@@ -127,7 +127,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [monthly, setMonthlyLocal] = useState<MonthlyCounter[]>(MONTHLY_COUNTER);
   const [agentCollections, setAgentCollectionsLocal] = useState<AgentCollectionData[]>(SAMPLE_AGENT_COLLECTIONS);
   const [agentSettlements, setAgentSettlementsLocal] = useState<AgentSettlementData[]>(SAMPLE_AGENT_SETTLEMENTS);
+  const [monthlyTarget, setMonthlyTargetState] = useState<number>(() => {
+    if (typeof window === 'undefined') return DEFAULT_MONTHLY_TARGET;
+    const v = Number(localStorage.getItem(MONTHLY_TARGET_KEY));
+    return Number.isFinite(v) && v > 0 ? v : DEFAULT_MONTHLY_TARGET;
+  });
+  const setMonthlyTarget = useCallback((t: number) => {
+    setMonthlyTargetState(t);
+    try { localStorage.setItem(MONTHLY_TARGET_KEY, String(t)); } catch {}
+  }, []);
   const [loading, setLoading] = useState(true);
+
 
   // Initial fetch
   useEffect(() => {
