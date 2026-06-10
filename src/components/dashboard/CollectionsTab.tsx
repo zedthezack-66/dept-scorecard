@@ -42,7 +42,7 @@ const CollectionsTab = () => {
   };
 
   const kpis: KPIItem[] = [
-    { label: 'Monthly Target', value: fmtK(totT), note: 'Total allocated · click to edit', barPct: 100, color: 'navy', onEdit: openEdit },
+    { label: 'Monthly Target', value: fmtK(totT), note: 'Total allocated', barPct: 100, color: 'navy', onEdit: openEdit },
     { label: 'Total Collected', value: fmtK(totM), note: `${rows.length} agents reporting`, barPct: Math.min(rate, 100), color: 'emerald' },
     { label: 'Outstanding Gap', value: fmtK(totV), note: 'Remaining to collect', barPct: totT > 0 ? Math.min((totV / totT) * 100, 100) : 0, color: 'amber' },
     { label: 'Collection Rate', value: `${rate}%`, note: 'Overall achievement', barPct: Math.min(rate, 100), color: 'gold' },
