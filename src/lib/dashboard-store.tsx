@@ -5,6 +5,9 @@ import {
   type AgentData, type MetricData, type WeeklyData, type MonthlyCounter, type AgentCollectionData, type AgentSettlementData,
 } from './data';
 
+const MONTHLY_TARGET_KEY = 'collections_monthly_target';
+const DEFAULT_MONTHLY_TARGET = 580000;
+
 interface DashboardState {
   agents: AgentData[];
   metrics: MetricData[];
@@ -12,6 +15,7 @@ interface DashboardState {
   monthly: MonthlyCounter[];
   agentCollections: AgentCollectionData[];
   agentSettlements: AgentSettlementData[];
+  monthlyTarget: number;
   loading: boolean;
   setAgents: (agents: AgentData[]) => Promise<void>;
   setMetrics: (metrics: MetricData[]) => Promise<void>;
@@ -19,6 +23,7 @@ interface DashboardState {
   setMonthly: (monthly: MonthlyCounter[]) => Promise<void>;
   setAgentCollections: (data: AgentCollectionData[]) => Promise<void>;
   setAgentSettlements: (data: AgentSettlementData[]) => Promise<void>;
+  setMonthlyTarget: (target: number) => void;
   updateAgentTarget: (index: number, target: number) => void;
   updateMetricTarget: (key: string, target: number) => void;
   updateWeeklyTarget: (index: number, target: number) => void;
