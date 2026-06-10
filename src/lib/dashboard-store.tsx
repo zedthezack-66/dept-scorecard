@@ -340,8 +340,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <DashboardContext.Provider value={{
-      agents, metrics, weekly, monthly, agentCollections, agentSettlements, loading,
-      setAgents, setMetrics, setWeekly, setMonthly, setAgentCollections, setAgentSettlements,
+      agents, metrics, weekly, monthly, agentCollections, agentSettlements, monthlyTarget, loading,
+      setAgents, setMetrics, setWeekly, setMonthly, setAgentCollections, setAgentSettlements, setMonthlyTarget,
       updateAgentTarget, updateMetricTarget, updateWeeklyTarget, updateMonthlyTarget,
     }}>
       {children}
