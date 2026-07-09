@@ -250,6 +250,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     await supabase.from('agents').insert(rows);
   }, []);
 
+  const setAgentsRef = useRef(setAgents);
+  useEffect(() => { setAgentsRef.current = setAgents; }, [setAgents]);
+
   // Write metrics to Supabase
   const setMetrics = useCallback(async (newMetrics: MetricData[]) => {
     setMetricsLocal(newMetrics);
