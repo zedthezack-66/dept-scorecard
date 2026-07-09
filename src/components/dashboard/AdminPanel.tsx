@@ -32,6 +32,36 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
   const [changePinOpen, setChangePinOpen] = useState(false);
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
+  const [agentSheetUrl, setAgentSheetUrl] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (open) setAgentSheetUrl(getSyncUrls().agents || '');
+  }, [open]);
+
+  const handleSaveUrl = () => {
+    saveSyncUrls({ ...getSyncUrls(), agents: agentSheetUrl.trim() });
+    toast.success('Sheet URL saved');
+  };
+
+  const handleRefreshAgents = async () => {
+    const url = agentSheetUrl.trim();
+    if (!url) {
+      toast.error('Add a sheet URL first');
+      return;
+    }
+    saveSyncUrls({ ...getSyncUrls(), agents: url });
+    setRefreshing(true);
+    try {
+      const agents = await refreshAgentsFromSheet(url);
+      await store.setAgents(agents);
+      toast.success(`Pulled ${agents.length} agents from sheet — synced to all users`);
+    } catch (err: any) {
+      toast.error(`Refresh failed: ${err.message}`);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleDownloadTemplate = () => {
     if (tab === 'collections') {
