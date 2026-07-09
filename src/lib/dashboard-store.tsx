@@ -194,6 +194,47 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+  // Auto-poll saved Google Sheet URL for the agent leaderboard
+  useEffect(() => {
+    let timer: number | undefined;
+    let cancelled = false;
+    let inFlight = false;
+
+    const tick = async () => {
+      if (inFlight) return;
+      const { getSyncUrls, refreshAgentsFromSheet } = await import('./sheet-sync');
+      const url = getSyncUrls().agents?.trim();
+      if (!url) return;
+      inFlight = true;
+      try {
+        const fresh = await refreshAgentsFromSheet(url);
+        if (!cancelled) await setAgentsRef.current(fresh);
+      } catch (e) {
+        console.warn('Auto sheet refresh failed:', (e as Error).message);
+      } finally {
+        inFlight = false;
+      }
+    };
+
+    const start = async () => {
+      const { getSyncIntervalMin } = await import('./sheet-sync');
+      const mins = getSyncIntervalMin();
+      if (timer) window.clearInterval(timer);
+      // initial pull shortly after mount
+      window.setTimeout(tick, 3000);
+      timer = window.setInterval(tick, Math.max(1, mins) * 60_000);
+    };
+
+    start();
+    const onChange = () => start();
+    window.addEventListener('dash-sync-config-changed', onChange);
+    return () => {
+      cancelled = true;
+      if (timer) window.clearInterval(timer);
+      window.removeEventListener('dash-sync-config-changed', onChange);
+    };
+  }, []);
+
   // Write agents to Supabase (delete all + insert)
   const setAgents = useCallback(async (newAgents: AgentData[]) => {
     setAgentsLocal(newAgents); // optimistic
