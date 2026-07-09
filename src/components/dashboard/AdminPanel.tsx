@@ -33,6 +33,7 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [agentSheetUrl, setAgentSheetUrl] = useState('');
+  const [intervalMin, setIntervalMin] = useState(5);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
