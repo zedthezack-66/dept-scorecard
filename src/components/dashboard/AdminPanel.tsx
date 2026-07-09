@@ -37,12 +37,16 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (open) setAgentSheetUrl(getSyncUrls().agents || '');
+    if (open) {
+      setAgentSheetUrl(getSyncUrls().agents || '');
+      setIntervalMin(getSyncIntervalMin());
+    }
   }, [open]);
 
   const handleSaveUrl = () => {
     saveSyncUrls({ ...getSyncUrls(), agents: agentSheetUrl.trim() });
-    toast.success('Sheet URL saved');
+    saveSyncIntervalMin(intervalMin);
+    toast.success(`Saved — auto-refresh every ${intervalMin} min`);
   };
 
   const handleRefreshAgents = async () => {
