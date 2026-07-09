@@ -14,7 +14,7 @@ import {
   parseCollectionsCsv,
   parseScorecardCsv,
 } from '@/lib/csv-utils';
-import { getSyncUrls, saveSyncUrls, refreshAgentsFromSheet } from '@/lib/sheet-sync';
+import { getSyncUrls, saveSyncUrls, refreshAgentsFromSheet, getSyncIntervalMin, saveSyncIntervalMin } from '@/lib/sheet-sync';
 import { toast } from 'sonner';
 import EditTargetsDialog from './EditTargetsDialog';
 
