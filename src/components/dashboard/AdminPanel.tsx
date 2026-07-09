@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { Upload, Download, Pencil, Lock, KeyRound } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Upload, Download, Pencil, Lock, KeyRound, RefreshCw, Link as LinkIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import {
   parseCollectionsCsv,
   parseScorecardCsv,
 } from '@/lib/csv-utils';
+import { getSyncUrls, saveSyncUrls, refreshAgentsFromSheet } from '@/lib/sheet-sync';
 import { toast } from 'sonner';
 import EditTargetsDialog from './EditTargetsDialog';
 
