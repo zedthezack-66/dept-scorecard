@@ -4,6 +4,9 @@ import { parseCollectionsCsv } from './csv-utils';
 
 const STORAGE_KEY = 'dash_sheet_sync_urls';
 
+const INTERVAL_KEY = 'dash_sheet_sync_interval_min';
+export const DEFAULT_SYNC_INTERVAL_MIN = 5;
+
 export interface SheetSyncUrls {
   agents?: string;
 }
@@ -18,6 +21,17 @@ export function getSyncUrls(): SheetSyncUrls {
 
 export function saveSyncUrls(urls: SheetSyncUrls) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(urls));
+  window.dispatchEvent(new Event('dash-sync-config-changed'));
+}
+
+export function getSyncIntervalMin(): number {
+  const v = Number(localStorage.getItem(INTERVAL_KEY));
+  return Number.isFinite(v) && v > 0 ? v : DEFAULT_SYNC_INTERVAL_MIN;
+}
+
+export function saveSyncIntervalMin(min: number) {
+  localStorage.setItem(INTERVAL_KEY, String(min));
+  window.dispatchEvent(new Event('dash-sync-config-changed'));
 }
 
 /**

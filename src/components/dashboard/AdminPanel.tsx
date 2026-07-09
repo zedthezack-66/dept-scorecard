@@ -14,7 +14,7 @@ import {
   parseCollectionsCsv,
   parseScorecardCsv,
 } from '@/lib/csv-utils';
-import { getSyncUrls, saveSyncUrls, refreshAgentsFromSheet } from '@/lib/sheet-sync';
+import { getSyncUrls, saveSyncUrls, refreshAgentsFromSheet, getSyncIntervalMin, saveSyncIntervalMin } from '@/lib/sheet-sync';
 import { toast } from 'sonner';
 import EditTargetsDialog from './EditTargetsDialog';
 
@@ -33,15 +33,20 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [agentSheetUrl, setAgentSheetUrl] = useState('');
+  const [intervalMin, setIntervalMin] = useState(5);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (open) setAgentSheetUrl(getSyncUrls().agents || '');
+    if (open) {
+      setAgentSheetUrl(getSyncUrls().agents || '');
+      setIntervalMin(getSyncIntervalMin());
+    }
   }, [open]);
 
   const handleSaveUrl = () => {
     saveSyncUrls({ ...getSyncUrls(), agents: agentSheetUrl.trim() });
-    toast.success('Sheet URL saved');
+    saveSyncIntervalMin(intervalMin);
+    toast.success(`Saved — auto-refresh every ${intervalMin} min`);
   };
 
   const handleRefreshAgents = async () => {
@@ -165,6 +170,22 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
                     placeholder="https://docs.google.com/spreadsheets/d/..."
                     className="text-[12px]"
                   />
+                  <div className="flex items-center gap-2">
+                    <Label className="text-[11px] text-muted-foreground whitespace-nowrap">Auto-refresh every</Label>
+                    <select
+                      value={intervalMin}
+                      onChange={(e) => setIntervalMin(Number(e.target.value))}
+                      className="flex-1 rounded-md border border-border bg-background px-2 py-1 text-[12px]"
+                    >
+                      <option value={1}>1 min</option>
+                      <option value={2}>2 min</option>
+                      <option value={5}>5 min</option>
+                      <option value={10}>10 min</option>
+                      <option value={15}>15 min</option>
+                      <option value={30}>30 min</option>
+                      <option value={60}>1 hour</option>
+                    </select>
+                  </div>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={handleSaveUrl} className="flex-1 text-[12px]">
                       Save URL
