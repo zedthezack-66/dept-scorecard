@@ -149,7 +149,40 @@ const AdminPanel = ({ open, onOpenChange, tab }: AdminPanelProps) => {
 
             <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleFileChange} />
 
+            {tab === 'collections' && (
+              <>
+                <Separator className="my-3" />
+                <div className="space-y-2 rounded-lg border border-border p-3">
+                  <div className="flex items-center gap-2 text-[12px] tracking-[2px] uppercase text-muted-foreground">
+                    <LinkIcon size={14} /> Live Sync — Agent Leaderboard
+                  </div>
+                  <Label className="text-[11px] text-muted-foreground">
+                    Google Sheets share URL or Excel/OneDrive direct link (must be public / anyone-with-link).
+                  </Label>
+                  <Input
+                    value={agentSheetUrl}
+                    onChange={(e) => setAgentSheetUrl(e.target.value)}
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
+                    className="text-[12px]"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={handleSaveUrl} className="flex-1 text-[12px]">
+                      Save URL
+                    </Button>
+                    <Button size="sm" onClick={handleRefreshAgents} disabled={refreshing} className="flex-1 gap-2 text-[12px]">
+                      <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+                      {refreshing ? 'Pulling…' : 'Refresh Now'}
+                    </Button>
+                  </div>
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    Sheet columns must be: Name, Phone, Target, Movement, AvgDaysArrears, Count.
+                  </p>
+                </div>
+              </>
+            )}
+
             <Separator className="my-3" />
+
 
             {!changePinOpen ? (
               <Button variant="ghost" className="justify-start gap-3 h-10 text-[13px] tracking-wider uppercase text-muted-foreground" onClick={() => setChangePinOpen(true)}>
