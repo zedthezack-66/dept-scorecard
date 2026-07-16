@@ -211,9 +211,10 @@ const ScorecardTab = () => {
         </div>
       </motion.div>
 
-      {/* Quarterly Avg Metrics — Q1 + Q2 */}
+      {/* Quarterly Avg Metrics — full width */}
       <div className="mb-5">
         <motion.div
+
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -221,61 +222,46 @@ const ScorecardTab = () => {
         >
           <div className="flex items-center justify-between bg-primary px-6 py-4">
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
-            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">Q1–Q2 2026</span>
+            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">YTD 2026</span>
           </div>
           {(() => {
-            const q1Months: MonthKey[] = ['jan', 'feb', 'mar'];
-            const q2Months: MonthKey[] = ['apr', 'may', 'jun'];
-            const qAvg = (m: any, months: MonthKey[]) => {
-              const vals = months.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
-              return vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-            };
-            const statusDot = (status: string) => {
-              const map: Record<string, string> = {
-                outstanding: 'bg-[hsl(120,100%,25%)]',
-                exceed: 'bg-[hsl(90,80%,40%)]',
-                meet: 'bg-[hsl(55,90%,45%)]',
-                unsatisfactory: 'bg-[hsl(35,100%,50%)]',
-                poor: 'bg-red',
-              };
-              return <span className={`inline-block h-4 w-4 rounded-full ${map[status] || 'bg-border'}`} />;
-            };
+            // Only render months that have data in at least one metric
+            const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk => metrics.some(m => m[mk] !== null && m[mk] !== undefined));
+            const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
             return (
               <table className="w-full border-collapse table-fixed">
                 <thead>
                   <tr className="border-b-2 border-border bg-secondary">
-                    <th className="w-[30%] px-4 py-3 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
-                    <th className="w-[12%] px-3 py-3 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
-                    <th className="w-[18%] px-3 py-3 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 AVG</th>
-                    <th className="w-[8%] px-3 py-3 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
-                    <th className="w-[18%] px-3 py-3 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 AVG</th>
-                    <th className="w-[8%] px-3 py-3 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
+                    <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
+                    {monthsToShow.map(mk => (
+                      <th key={mk} className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                    ))}
+                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Avg</th>
+                    <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {metrics.map(m => {
-                    const q1Avg = qAvg(m, q1Months);
-                    const q2Avg = qAvg(m, q2Months);
-                    const q1Status = getStatus(q1Avg, m.target, m.lowerIsBetter);
-                    const q2Status = getStatus(q2Avg, m.target, m.lowerIsBetter);
+                  {metrics.filter(m => monthsToShow.some(mk => m[mk] !== null && m[mk] !== undefined)).map(m => {
+                    const vals = monthsToShow.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
+                    const avg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+                    const status = getStatus(avg, m.target, m.lowerIsBetter);
                     return (
                       <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                        <td className="px-4 py-3.5 text-[14px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
-                        <td className="px-3 py-3.5 text-right text-[14px] font-medium">{m.target}{m.unit}</td>
-                        <td className="px-3 py-3.5 text-right">
-                          {q1Avg !== null
-                            ? <span className="font-display text-[20px] tracking-wider">{q1Avg.toFixed(1)}{m.unit}</span>
+                        <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
+                        <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
+                        {monthsToShow.map(mk => (
+                          <td key={mk} className="px-2 py-3 text-right text-[13px]">
+                            {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
+                          </td>
+                        ))}
+                        <td className="px-2 py-3 text-right">
+                          {avg !== null
+                            ? <span className="font-display text-[18px] tracking-wider">{avg.toFixed(1)}{m.unit}</span>
                             : <span className="italic text-border">—</span>
                           }
                         </td>
-                        <td className="px-3 py-3.5 text-center">{statusDot(q1Status)}</td>
-                        <td className="px-3 py-3.5 text-right">
-                          {q2Avg !== null
-                            ? <span className="font-display text-[20px] tracking-wider">{q2Avg.toFixed(1)}{m.unit}</span>
-                            : <span className="italic text-border">—</span>
-                          }
-                        </td>
-                        <td className="px-3 py-3.5 text-center">{statusDot(q2Status)}</td>
+                        <td className="px-2 py-3 text-right">{statusBadge(status)}</td>
                       </tr>
                     );
                   })}
