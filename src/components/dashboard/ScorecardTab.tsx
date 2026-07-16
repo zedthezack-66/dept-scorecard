@@ -34,6 +34,13 @@ const barColorClass = (status: string) => {
   return map[status] || 'bg-border';
 };
 
+const fmtMetricValue = (val: number | null, unit: string) => {
+  if (val === null || val === undefined) return null;
+  if (unit === 'K') return fmtK(Math.round(val));
+  if (unit === '%') return `${val.toFixed(1)}%`;
+  return `${val.toFixed(1)}${unit}`;
+};
+
 const ScorecardTab = () => {
   const { metrics, weekly, monthly, agentCollections, agentSettlements } = useDashboard();
 
