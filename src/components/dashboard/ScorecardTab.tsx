@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { getStatus, fmt, fmtK, MONTH_KEYS, MONTH_LABELS } from '@/lib/data';
 import { useDashboard } from '@/lib/dashboard-store';
@@ -228,6 +228,14 @@ const ScorecardTab = () => {
             // Only render months that have data in at least one metric
             const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk => metrics.some(m => m[mk] !== null && m[mk] !== undefined));
             const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
+            const Q1: MonthKey[] = ['jan','feb','mar'];
+            const Q2: MonthKey[] = ['apr','may','jun'];
+            const showQ1 = Q1.some(mk => monthsToShow.includes(mk));
+            const showQ2 = Q2.some(mk => monthsToShow.includes(mk));
+            const quarterAvg = (m: typeof metrics[number], group: MonthKey[]) => {
+              const vals = group.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
+              return vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+            };
             return (
               <table className="w-full border-collapse table-fixed">
                 <thead>
@@ -235,10 +243,24 @@ const ScorecardTab = () => {
                     <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
                     <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
                     {monthsToShow.map(mk => (
-                      <th key={mk} className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                      <Fragment key={mk}>
+                        <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                        {mk === 'mar' && showQ1 && (
+                          <Fragment>
+                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
+                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
+                          </Fragment>
+                        )}
+                        {mk === 'jun' && showQ2 && (
+                          <Fragment>
+                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
+                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
+                          </Fragment>
+                        )}
+                      </Fragment>
                     ))}
-                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Avg</th>
-                    <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Status</th>
+                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Avg</th>
+                    <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -246,14 +268,40 @@ const ScorecardTab = () => {
                     const vals = monthsToShow.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
                     const avg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
                     const status = getStatus(avg, m.target, m.lowerIsBetter);
+                    const q1 = quarterAvg(m, Q1);
+                    const q1Status = getStatus(q1, m.target, m.lowerIsBetter);
+                    const q2 = quarterAvg(m, Q2);
+                    const q2Status = getStatus(q2, m.target, m.lowerIsBetter);
                     return (
                       <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
                         <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
                         <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
                         {monthsToShow.map(mk => (
-                          <td key={mk} className="px-2 py-3 text-right text-[13px]">
-                            {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
-                          </td>
+                          <Fragment key={mk}>
+                            <td className="px-2 py-3 text-right text-[13px]">
+                              {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
+                            </td>
+                            {mk === 'mar' && showQ1 && (
+                              <Fragment>
+                                <td className="px-2 py-3 text-right">
+                                  {q1 !== null
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q1Status)}`}>{q1.toFixed(1)}{m.unit}</span>
+                                    : <span className="italic text-border">—</span>}
+                                </td>
+                                <td className="px-2 py-3 text-right">{statusBadge(q1Status)}</td>
+                              </Fragment>
+                            )}
+                            {mk === 'jun' && showQ2 && (
+                              <Fragment>
+                                <td className="px-2 py-3 text-right">
+                                  {q2 !== null
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q2Status)}`}>{q2.toFixed(1)}{m.unit}</span>
+                                    : <span className="italic text-border">—</span>}
+                                </td>
+                                <td className="px-2 py-3 text-right">{statusBadge(q2Status)}</td>
+                              </Fragment>
+                            )}
+                          </Fragment>
                         ))}
                         <td className="px-2 py-3 text-right">
                           {avg !== null
