@@ -225,7 +225,7 @@ const ScorecardTab = () => {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="overflow-hidden rounded-lg border border-border bg-card shadow-card"
+          className="-mx-4 overflow-hidden rounded-lg border border-border bg-card shadow-card sm:-mx-7"
         >
           <div className="flex items-center justify-between bg-primary px-6 py-4">
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
