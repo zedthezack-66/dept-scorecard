@@ -247,27 +247,27 @@ const ScorecardTab = () => {
               <table className="w-full border-collapse table-fixed">
                 <thead>
                   <tr className="border-b-2 border-border bg-secondary">
-                    <th className="w-[18%] px-4 py-4 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
-                    <th className="w-[5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
+                    <th className="w-[16%] px-4 py-4 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                    <th className="w-[4%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
                     {monthsToShow.map(mk => (
                       <Fragment key={mk}>
-                        <th className="w-[4%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                        <th className="w-[5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
                         {mk === 'mar' && showQ1 && (
                           <Fragment>
                             <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
-                            <th className="w-[12%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
+                            <th className="w-[11%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
                           </Fragment>
                         )}
                         {mk === 'jun' && showQ2 && (
                           <Fragment>
                             <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
-                            <th className="w-[12%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
+                            <th className="w-[11%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
                           </Fragment>
                         )}
                       </Fragment>
                     ))}
                     <th className="w-[5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Avg</th>
-                    <th className="w-[12%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
+                    <th className="w-[11%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
                   </tr>
                 </thead>
                 <tbody>
