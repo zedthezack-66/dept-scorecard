@@ -247,7 +247,7 @@ const ScorecardTab = () => {
               <table className="w-full border-collapse table-fixed">
                 <thead>
                   <tr className="border-b-2 border-border bg-secondary">
-                    <th className="w-[15%] px-4 py-4 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                    <th className="w-[13%] px-4 py-4 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
                     <th className="w-[4%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
                     {monthsToShow.map(mk => (
                       <Fragment key={mk}>
