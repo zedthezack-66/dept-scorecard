@@ -16,7 +16,7 @@ const statusBadge = (status: string) => {
   };
   const s = map[status] || map.pending;
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[12px] font-bold tracking-wider uppercase whitespace-nowrap ${s.bg} ${s.text}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wider uppercase whitespace-nowrap ${s.bg} ${s.text}`}>
       <span className="h-2.5 w-2.5 rounded-full bg-current" />
       {s.label}
     </span>
