@@ -277,31 +277,31 @@ const ScorecardTab = () => {
                         <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
                         <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
                         {monthsToShow.map(mk => (
-                          <>
-                            <td key={mk} className="px-2 py-3 text-right text-[13px]">
+                          <Fragment key={mk}>
+                            <td className="px-2 py-3 text-right text-[13px]">
                               {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
                             </td>
                             {mk === 'mar' && showQ1 && (
-                              <>
-                                <td key="q1avg" className="px-2 py-3 text-right">
+                              <Fragment>
+                                <td className="px-2 py-3 text-right">
                                   {q1 !== null
                                     ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q1Status)}`}>{q1.toFixed(1)}{m.unit}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td key="q1st" className="px-2 py-3 text-right">{statusBadge(q1Status)}</td>
-                              </>
+                                <td className="px-2 py-3 text-right">{statusBadge(q1Status)}</td>
+                              </Fragment>
                             )}
                             {mk === 'jun' && showQ2 && (
-                              <>
-                                <td key="q2avg" className="px-2 py-3 text-right">
+                              <Fragment>
+                                <td className="px-2 py-3 text-right">
                                   {q2 !== null
                                     ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q2Status)}`}>{q2.toFixed(1)}{m.unit}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td key="q2st" className="px-2 py-3 text-right">{statusBadge(q2Status)}</td>
-                              </>
+                                <td className="px-2 py-3 text-right">{statusBadge(q2Status)}</td>
+                              </Fragment>
                             )}
-                          </>
+                          </Fragment>
                         ))}
                         <td className="px-2 py-3 text-right">
                           {avg !== null
