@@ -243,21 +243,21 @@ const ScorecardTab = () => {
                     <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
                     <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
                     {monthsToShow.map(mk => (
-                      <>
-                        <th key={mk} className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                      <Fragment key={mk}>
+                        <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
                         {mk === 'mar' && showQ1 && (
-                          <>
-                            <th key="q1avg" className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
-                            <th key="q1st" className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
-                          </>
+                          <Fragment>
+                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
+                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
+                          </Fragment>
                         )}
                         {mk === 'jun' && showQ2 && (
-                          <>
-                            <th key="q2avg" className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
-                            <th key="q2st" className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
-                          </>
+                          <Fragment>
+                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
+                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
+                          </Fragment>
                         )}
-                      </>
+                      </Fragment>
                     ))}
                     <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Avg</th>
                     <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
