@@ -281,7 +281,7 @@ const ScorecardTab = () => {
                     const q2Status = getStatus(q2, m.target, m.lowerIsBetter);
                     return (
                       <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                        <td className="px-4 py-5 text-[14px] font-semibold text-foreground whitespace-nowrap">{m.name}</td>
+                        <td className="px-4 py-5 text-[13px] font-semibold leading-tight text-foreground">{m.name}</td>
                         <td className="px-2 py-5 text-right text-[14px] font-medium">{fmtMetricValue(m.target, m.unit)}</td>
                         {monthsToShow.map(mk => (
                           <Fragment key={mk}>
