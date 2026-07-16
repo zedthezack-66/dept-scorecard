@@ -17,7 +17,7 @@ const statusBadge = (status: string) => {
   const s = map[status] || map.pending;
   return (
     <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wider uppercase whitespace-nowrap ${s.bg} ${s.text}`}>
-      <span className="h-2 w-2 rounded-full bg-current" />
+      <span className="h-2.5 w-2.5 rounded-full bg-current" />
       {s.label}
     </span>
   );
@@ -32,6 +32,13 @@ const barColorClass = (status: string) => {
     'poor': 'bg-red',
   };
   return map[status] || 'bg-border';
+};
+
+const fmtMetricValue = (val: number | null, unit: string) => {
+  if (val === null || val === undefined) return null;
+  if (unit === 'K') return fmtK(Math.round(val));
+  if (unit === '%') return `${val.toFixed(1)}%`;
+  return `${val.toFixed(1)}${unit}`;
 };
 
 const ScorecardTab = () => {
@@ -51,7 +58,7 @@ const ScorecardTab = () => {
   }, [metrics]);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-7">
+    <div className="w-full px-4 py-6 sm:px-7">
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary pb-5">
         <div>
@@ -218,7 +225,7 @@ const ScorecardTab = () => {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="overflow-hidden rounded-lg border border-border bg-card shadow-card"
+          className="-mx-4 overflow-hidden rounded-lg border border-border bg-card shadow-card sm:-mx-7"
         >
           <div className="flex items-center justify-between bg-primary px-6 py-4">
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
@@ -240,27 +247,27 @@ const ScorecardTab = () => {
               <table className="w-full border-collapse table-fixed">
                 <thead>
                   <tr className="border-b-2 border-border bg-secondary">
-                    <th className="w-[22%] px-3 py-3 text-left text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
-                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
+                    <th className="w-[13%] px-4 py-4 text-left text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Metric</th>
+                    <th className="w-[4%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Target</th>
                     {monthsToShow.map(mk => (
                       <Fragment key={mk}>
-                        <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
+                        <th className="w-[4.5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
                         {mk === 'mar' && showQ1 && (
                           <Fragment>
-                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
-                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
+                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
+                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
                           </Fragment>
                         )}
                         {mk === 'jun' && showQ2 && (
                           <Fragment>
-                            <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
-                            <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
+                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
+                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
                           </Fragment>
                         )}
                       </Fragment>
                     ))}
-                    <th className="px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Avg</th>
-                    <th className="w-[14%] px-2 py-3 text-right text-[11px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
+                    <th className="w-[5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Avg</th>
+                    <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">YTD Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -274,42 +281,42 @@ const ScorecardTab = () => {
                     const q2Status = getStatus(q2, m.target, m.lowerIsBetter);
                     return (
                       <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
-                        <td className="px-3 py-3 text-[12px] font-semibold text-foreground leading-tight break-words whitespace-normal">{m.name}</td>
-                        <td className="px-2 py-3 text-right text-[13px] font-medium">{m.target}{m.unit}</td>
+                        <td className="px-4 py-5 text-[13px] font-semibold leading-tight text-foreground">{m.name}</td>
+                        <td className="px-2 py-5 text-right text-[14px] font-medium">{fmtMetricValue(m.target, m.unit)}</td>
                         {monthsToShow.map(mk => (
                           <Fragment key={mk}>
-                            <td className="px-2 py-3 text-right text-[13px]">
-                              {m[mk] !== null && m[mk] !== undefined ? `${m[mk]}${m.unit}` : <span className="italic text-border">—</span>}
+                            <td className="px-2 py-5 text-right text-[13px]">
+                              {m[mk] !== null && m[mk] !== undefined ? fmtMetricValue(m[mk], m.unit) : <span className="italic text-border">—</span>}
                             </td>
                             {mk === 'mar' && showQ1 && (
                               <Fragment>
-                                <td className="px-2 py-3 text-right">
+                                <td className="px-2 py-5 text-center">
                                   {q1 !== null
-                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q1Status)}`}>{q1.toFixed(1)}{m.unit}</span>
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(q1Status)}`}>{fmtMetricValue(q1, m.unit)}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td className="px-2 py-3 text-right">{statusBadge(q1Status)}</td>
+                                <td className="px-2 py-5 text-right">{statusBadge(q1Status)}</td>
                               </Fragment>
                             )}
                             {mk === 'jun' && showQ2 && (
                               <Fragment>
-                                <td className="px-2 py-3 text-right">
+                                <td className="px-2 py-5 text-center">
                                   {q2 !== null
-                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-bold text-white ${barColorClass(q2Status)}`}>{q2.toFixed(1)}{m.unit}</span>
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(q2Status)}`}>{fmtMetricValue(q2, m.unit)}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td className="px-2 py-3 text-right">{statusBadge(q2Status)}</td>
+                                <td className="px-2 py-5 text-right">{statusBadge(q2Status)}</td>
                               </Fragment>
                             )}
                           </Fragment>
                         ))}
-                        <td className="px-2 py-3 text-right">
+                        <td className="px-2 py-5 text-right">
                           {avg !== null
-                            ? <span className="font-display text-[18px] tracking-wider">{avg.toFixed(1)}{m.unit}</span>
+                            ? <span className="font-display text-[18px] tracking-wider">{fmtMetricValue(avg, m.unit)}</span>
                             : <span className="italic text-border">—</span>
                           }
                         </td>
-                        <td className="px-2 py-3 text-right">{statusBadge(status)}</td>
+                        <td className="px-2 py-5 text-right">{statusBadge(status)}</td>
                       </tr>
                     );
                   })}
