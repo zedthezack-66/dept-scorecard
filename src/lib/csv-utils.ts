@@ -60,6 +60,9 @@ export function generateScorecardTemplate(
   sections.push('## MONTHLY');
   sections.push('Month,Target,Actual');
   for (const m of monthly) {
+    sections.push([m.month, m.target, m.actual ?? ''].join(','));
+  }
+
   // AGENT COLLECTIONS section — supports all 12 months
   sections.push('');
   sections.push('## AGENT_COLLECTIONS');
@@ -77,7 +80,6 @@ export function generateScorecardTemplate(
     sections.push([a.agentName, a.settlementTarget, ...MONTH_KEYS.map(k => (a as any)[`${k}Actual`] ?? '')].join(','));
   }
 
-  }
 
   return sections.join('\n');
 }
