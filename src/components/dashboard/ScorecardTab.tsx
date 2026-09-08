@@ -218,32 +218,35 @@ const ScorecardTab = () => {
         </div>
       </motion.div>
 
-      {/* Quarterly Avg Metrics — full width */}
-      <div className="mb-5">
-        <motion.div
-
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="-mx-4 overflow-hidden rounded-lg border border-border bg-card shadow-card sm:-mx-7"
-        >
-          <div className="flex items-center justify-between bg-primary px-6 py-4">
-            <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Quarterly Avg Metrics</span>
-            <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">YTD 2026</span>
-          </div>
-          {(() => {
-            // Only render months that have data in at least one metric
-            const activeMonths: MonthKey[] = MONTH_KEYS.filter(mk => metrics.some(m => m[mk] !== null && m[mk] !== undefined));
-            const monthsToShow: MonthKey[] = activeMonths.length > 0 ? activeMonths : (['jan','feb','mar'] as MonthKey[]);
-            const Q1: MonthKey[] = ['jan','feb','mar'];
-            const Q2: MonthKey[] = ['apr','may','jun'];
-            const showQ1 = Q1.some(mk => monthsToShow.includes(mk));
-            const showQ2 = Q2.some(mk => monthsToShow.includes(mk));
-            const quarterAvg = (m: typeof metrics[number], group: MonthKey[]) => {
-              const vals = group.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
-              return vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-            };
-            return (
+      {/* Quarterly Avg Metrics — full width (H1: Q1/Q2, H2: Q3/Q4) */}
+      <div className="mb-5 space-y-5">
+        {([
+          { title: 'Quarterly Avg Metrics', badge: 'H1 2026', half: ['jan','feb','mar','apr','may','jun'] as MonthKey[], qA: { key: 'Q1', last: 'mar' as MonthKey, months: ['jan','feb','mar'] as MonthKey[] }, qB: { key: 'Q2', last: 'jun' as MonthKey, months: ['apr','may','jun'] as MonthKey[] }, delay: 0.4 },
+          { title: 'Quarterly Avg Metrics', badge: 'H2 2026', half: ['jul','aug','sep','oct','nov','dec'] as MonthKey[], qA: { key: 'Q3', last: 'sep' as MonthKey, months: ['jul','aug','sep'] as MonthKey[] }, qB: { key: 'Q4', last: 'dec' as MonthKey, months: ['oct','nov','dec'] as MonthKey[] }, delay: 0.45 },
+        ]).map(cfg => {
+          const activeMonths: MonthKey[] = cfg.half.filter(mk => metrics.some(m => m[mk] !== null && m[mk] !== undefined));
+          const monthsToShow: MonthKey[] = activeMonths.length > 0
+            ? activeMonths
+            : (cfg.badge === 'H1 2026' ? (['jan','feb','mar'] as MonthKey[]) : []);
+          if (monthsToShow.length === 0) return null;
+          const showA = cfg.qA.months.some(mk => monthsToShow.includes(mk));
+          const showB = cfg.qB.months.some(mk => monthsToShow.includes(mk));
+          const quarterAvg = (m: typeof metrics[number], group: MonthKey[]) => {
+            const vals = group.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
+            return vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+          };
+          return (
+            <motion.div
+              key={cfg.badge}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: cfg.delay }}
+              className="-mx-4 overflow-hidden rounded-lg border border-border bg-card shadow-card sm:-mx-7"
+            >
+              <div className="flex items-center justify-between bg-primary px-6 py-4">
+                <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">{cfg.title}</span>
+                <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">{cfg.badge}</span>
+              </div>
               <table className="w-full border-collapse table-fixed">
                 <thead>
                   <tr className="border-b-2 border-border bg-secondary">
@@ -252,16 +255,16 @@ const ScorecardTab = () => {
                     {monthsToShow.map(mk => (
                       <Fragment key={mk}>
                         <th className="w-[4.5%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{MONTH_LABELS[mk]}</th>
-                        {mk === 'mar' && showQ1 && (
+                        {mk === cfg.qA.last && showA && (
                           <Fragment>
-                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Avg</th>
-                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q1 Status</th>
+                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{cfg.qA.key} Avg</th>
+                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{cfg.qA.key} Status</th>
                           </Fragment>
                         )}
-                        {mk === 'jun' && showQ2 && (
+                        {mk === cfg.qB.last && showB && (
                           <Fragment>
-                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Avg</th>
-                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">Q2 Status</th>
+                            <th className="w-[5%] px-2 py-4 text-center text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{cfg.qB.key} Avg</th>
+                            <th className="w-[13%] px-2 py-4 text-right text-[12px] font-bold tracking-[1px] uppercase text-muted-foreground">{cfg.qB.key} Status</th>
                           </Fragment>
                         )}
                       </Fragment>
@@ -272,13 +275,13 @@ const ScorecardTab = () => {
                 </thead>
                 <tbody>
                   {metrics.filter(m => monthsToShow.some(mk => m[mk] !== null && m[mk] !== undefined)).map(m => {
-                    const vals = monthsToShow.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
-                    const avg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+                    const ytdVals = MONTH_KEYS.map(mk => m[mk]).filter(v => v !== null && v !== undefined) as number[];
+                    const avg = ytdVals.length > 0 ? ytdVals.reduce((s, v) => s + v, 0) / ytdVals.length : null;
                     const status = getStatus(avg, m.target, m.lowerIsBetter);
-                    const q1 = quarterAvg(m, Q1);
-                    const q1Status = getStatus(q1, m.target, m.lowerIsBetter);
-                    const q2 = quarterAvg(m, Q2);
-                    const q2Status = getStatus(q2, m.target, m.lowerIsBetter);
+                    const qa = quarterAvg(m, cfg.qA.months);
+                    const qaStatus = getStatus(qa, m.target, m.lowerIsBetter);
+                    const qb = quarterAvg(m, cfg.qB.months);
+                    const qbStatus = getStatus(qb, m.target, m.lowerIsBetter);
                     return (
                       <tr key={m.key} className="border-b border-border hover:bg-primary/[0.03]">
                         <td className="px-4 py-5 text-[13px] font-semibold leading-tight text-foreground">{m.name}</td>
@@ -288,24 +291,24 @@ const ScorecardTab = () => {
                             <td className="px-2 py-5 text-right text-[13px]">
                               {m[mk] !== null && m[mk] !== undefined ? fmtMetricValue(m[mk], m.unit) : <span className="italic text-border">—</span>}
                             </td>
-                            {mk === 'mar' && showQ1 && (
+                            {mk === cfg.qA.last && showA && (
                               <Fragment>
                                 <td className="px-2 py-5 text-center">
-                                  {q1 !== null
-                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(q1Status)}`}>{fmtMetricValue(q1, m.unit)}</span>
+                                  {qa !== null
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(qaStatus)}`}>{fmtMetricValue(qa, m.unit)}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td className="px-2 py-5 text-right">{statusBadge(q1Status)}</td>
+                                <td className="px-2 py-5 text-right">{statusBadge(qaStatus)}</td>
                               </Fragment>
                             )}
-                            {mk === 'jun' && showQ2 && (
+                            {mk === cfg.qB.last && showB && (
                               <Fragment>
                                 <td className="px-2 py-5 text-center">
-                                  {q2 !== null
-                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(q2Status)}`}>{fmtMetricValue(q2, m.unit)}</span>
+                                  {qb !== null
+                                    ? <span className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-[13px] font-bold text-white ${barColorClass(qbStatus)}`}>{fmtMetricValue(qb, m.unit)}</span>
                                     : <span className="italic text-border">—</span>}
                                 </td>
-                                <td className="px-2 py-5 text-right">{statusBadge(q2Status)}</td>
+                                <td className="px-2 py-5 text-right">{statusBadge(qbStatus)}</td>
                               </Fragment>
                             )}
                           </Fragment>
@@ -322,17 +325,19 @@ const ScorecardTab = () => {
                   })}
                 </tbody>
               </table>
-            );
-          })()}
-        </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
 
-
+      <div className="mb-5">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
           className="overflow-hidden rounded-lg border border-border bg-card shadow-card"
         >
+
           <div className="flex items-center justify-between bg-primary px-6 py-4">
             <span className="font-display text-[20px] tracking-[3px] text-primary-foreground">Monthly Counter Totals</span>
             <span className="rounded border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-[11px] font-bold tracking-[2px] uppercase text-primary-foreground/50">K {fmt(monthly[0]?.target ?? 60000)} target</span>
